@@ -27,7 +27,7 @@
         android:layout_width="218dp"
         android:layout_height="219dp"
         android:layout_gravity="center"
-        android:background="@drawable/bomb"
+        android:background="@drawable/rps_logo"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"

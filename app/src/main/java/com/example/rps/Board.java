@@ -24,14 +24,22 @@ public class Board
         this.context = context;
         this.linearLayout = linearLayout;
         this.buttons = new Button[column][row];
-
+        int index = 1;
         for (int i = 0; i < column; i++)
         {
             for (int j = 0; j < row; j++)
             {
                 this.buttons [i][j] = new Button(context);
                 setButtonParameters(this.buttons [i][j]);
+                if(index%2 ==0 )
+                {
+                    this.buttons[i][j].setBackgroundColor(-16711936 );
+                }
+                else
+                    this.buttons[i][j].setBackgroundColor(0XFF03DAC5 );
+                index++;
             }
+          //  index++;
         }
 
         PlaceButtonsInLayout();
@@ -96,7 +104,6 @@ public class Board
         /*
          *This function places the buttons in the layout
          */
-        int index = 0;
         for (Button[] rowButtons : this.buttons)
         {
             LinearLayout rowLinearLayout = new LinearLayout(this.context);
@@ -105,14 +112,9 @@ public class Board
             rowLinearLayout.setLayoutParams(layoutParameters);
             for (Button button : rowButtons)
             {
-                if(index%2 ==0 )
-                {
-                    button.setAlpha((float) 0.45);
-                }
+
                 rowLinearLayout.addView(button);
-                index++;
             }
-            index++;
             this.linearLayout.addView(rowLinearLayout);
         }
     }
@@ -123,18 +125,17 @@ public class Board
         The program uses DisplayMetrics to get width of the user screen.
         By that it adjusts the board to a comfortable size.
          */
-        button.setBackgroundColor(-16711936 );
         LinearLayout.LayoutParams buttonParameters;
         DisplayMetrics displayMetrics = new DisplayMetrics();
         ((Activity) this.context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int width = displayMetrics.widthPixels;
         if (row < column)
         {
-            buttonParameters = new LinearLayout.LayoutParams(width/column-3 ,width/column-3); // 95 was the default size.
+            buttonParameters = new LinearLayout.LayoutParams(width/column-8 ,width/column-8); // 95 was the default size.
         }
         else
         {
-            buttonParameters = new LinearLayout.LayoutParams(width/row-3 ,width/row-3); // 95 was the default size.
+            buttonParameters = new LinearLayout.LayoutParams(width/row-8 ,width/row-8); // 95 was the default size.
         }
         buttonParameters.setMargins(5, 1, 5, 1);
         button.setLayoutParams(buttonParameters);
