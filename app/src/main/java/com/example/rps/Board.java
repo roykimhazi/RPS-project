@@ -2,12 +2,17 @@ package com.example.rps;
 
 import android.app.Activity;
 import android.content.Context;
+import android.nfc.cardemulation.HostApduService;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
+import java.util.HashMap;
+
+
 
 public class Board
 {
@@ -23,14 +28,15 @@ public class Board
         this.row = row;
         this.context = context;
         this.linearLayout = linearLayout;
-        this.buttons = new Button[column][row];
+        this.buttons = new Button[row][column];
         int index = 1;
-        for (int i = 0; i < column; i++)
+        for (int i = 0; i < row; i++)
         {
-            for (int j = 0; j < row; j++)
+            for (int j = 0; j < column; j++)
             {
                 this.buttons [i][j] = new Button(context);
                 setButtonParameters(this.buttons [i][j]);
+                this.buttons[i][j].setTextSize(32);
                 if(index%2 ==0 )
                 {
                     this.buttons[i][j].setBackgroundColor(-16711936 );
@@ -39,7 +45,7 @@ public class Board
                     this.buttons[i][j].setBackgroundColor(0XFF03DAC5 );
                 index++;
             }
-          //  index++;
+            //index++;
         }
 
         PlaceButtonsInLayout();
@@ -112,13 +118,36 @@ public class Board
             rowLinearLayout.setLayoutParams(layoutParameters);
             for (Button button : rowButtons)
             {
-
                 rowLinearLayout.addView(button);
             }
             this.linearLayout.addView(rowLinearLayout);
         }
     }
 
+    public LinearLayout addTwoButtons()
+    {
+        LinearLayout two_buttons = new LinearLayout(this.context);
+        Button b,b2;
+        b = new Button(context);
+        b.setText("Shuffle pieces?");
+        b.setTextSize(20);
+        b.setId(1);
+        b.setOnClickListener((View.OnClickListener) this.context);
+        two_buttons.addView(b);
+        b2 = new Button(context);
+        b2.setText("Stay with these");
+        b2.setTextSize(20);
+        b2.setId(2);
+        b2.setOnClickListener((View.OnClickListener) this.context);
+        two_buttons.addView(b2);
+        two_buttons.setHorizontalGravity(17);
+        this.linearLayout.addView(two_buttons);
+        return two_buttons;
+    }
+    public void removeTwoButtons(LinearLayout two_buttons)
+    {
+        this.linearLayout.removeViewInLayout(two_buttons);
+    }
     private void setButtonParameters(Button button)
     {
         /*
@@ -139,5 +168,27 @@ public class Board
         }
         buttonParameters.setMargins(5, 1, 5, 1);
         button.setLayoutParams(buttonParameters);
+    }
+    public void showPieces(int loc, Player p)
+    {
+        int i_loc = loc;
+        HashMap<Player.piece_type, String> convert = new HashMap<>();
+        convert.put(Player.piece_type.rock,"\uD83E\uDEA8");
+        convert.put(Player.piece_type.paper,"\uD83D\uDCC3");
+        convert.put(Player.piece_type.scissors,"✂");
+        convert.put(Player.piece_type.king,"⛿");
+        convert.put(Player.piece_type.trap,"\uD83E\uDEA4");
+        convert.put(Player.piece_type.empty,"");
+        for (int i = i_loc / column; i < i_loc / column + 2; i++)
+        {
+            for(int j = 0; j < 7; j++)
+            {
+                buttons[i][j].setText(convert.get(p.getPieces().get(loc++)));
+            }
+        }
+    }
+    public void updateButton(int loc, String txt)
+    {
+
     }
 }

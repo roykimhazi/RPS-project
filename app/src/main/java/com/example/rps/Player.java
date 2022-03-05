@@ -8,7 +8,7 @@ public class Player {
         empty,
         rock,
         paper,
-        Scissors,
+        scissors,
         trap,
         king
     }
@@ -27,6 +27,60 @@ public class Player {
             for(int j = 0; j < 7; j++)
             {
                 this.pieces.put(i*7+j,piece_type.empty);
+            }
+        }
+    }
+    public void resetPieces(int loc)
+    {
+        for (int i = loc; i < 14 + loc; i++)
+        {
+            if (pieces.get(i) != piece_type.king && pieces.get(i) != piece_type.trap)
+                pieces.put(i, piece_type.empty);
+        }
+    }
+
+    public void spread_pieces(int loc)
+    {
+        for (int i = 0; i < 12; i++)
+        {
+            boolean foundPlace = false;
+            if(i<4)
+            {
+                while (!foundPlace)
+                {
+                    int x = (int) (Math.random() * (14));
+                    if (pieces.get(loc + x) == piece_type.empty)
+                    {
+                        pieces.put(loc + x, piece_type.paper);
+                        foundPlace = true;
+                    }
+                }
+            }
+            else{
+                if(i<8)
+                {
+                    while (!foundPlace)
+                    {
+                        int x = (int) (Math.random() * (14));
+                        if (pieces.get(loc + x) == piece_type.empty)
+                        {
+                            pieces.put(loc + x, piece_type.rock);
+                            foundPlace = true;
+                        }
+                    }
+                }
+                else
+                {
+                    while (!foundPlace)
+                    {
+                        int x = (int) (Math.random() * (14));
+                        if (pieces.get(loc + x) == piece_type.empty)
+                        {
+                            pieces.put(loc + x, piece_type.scissors);
+                            foundPlace = true;
+                        }
+                    }
+                }
             }
         }
     }

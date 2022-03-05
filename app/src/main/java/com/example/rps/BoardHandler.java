@@ -1,5 +1,7 @@
 package com.example.rps;
 
+import java.util.HashMap;
+
 public class BoardHandler
 {
     private int [][] intBoard;
