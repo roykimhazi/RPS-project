@@ -173,11 +173,11 @@ public class Board
     {
         int i_loc = loc;
         HashMap<Player.piece_type, String> convert = new HashMap<>();
-        convert.put(Player.piece_type.rock,"\uD83E\uDEA8");
+        convert.put(Player.piece_type.rock,"R");    //🪨,🪨
         convert.put(Player.piece_type.paper,"\uD83D\uDCC3");
         convert.put(Player.piece_type.scissors,"✂");
         convert.put(Player.piece_type.king,"⛿");
-        convert.put(Player.piece_type.trap,"\uD83E\uDEA4");
+        convert.put(Player.piece_type.trap,"T");//🪤
         convert.put(Player.piece_type.empty,"");
         for (int i = i_loc / column; i < i_loc / column + 2; i++)
         {

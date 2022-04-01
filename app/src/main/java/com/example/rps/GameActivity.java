@@ -17,20 +17,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Random;
 
 public class GameActivity extends AppCompatActivity implements View.OnClickListener {
     LinearLayout linearLayoutBoard, two_buttons;
     Board board;
-    int column, row;
+    int column, row, turn;
     BoardHandler bh;
     Dialog d_lose, d_win;
     TextView tvbombsleft_d, tv_score_d;
     Button homebtn_lose, homebtn_win, btn_flag;
-    boolean is_flag = false, is_first = true, is_sec = true;
-    TextView tv_bombs, tv_score;
+    boolean is_flag = false, is_first = true, is_sec = true, first_move;
+    TextView tv_text;
     String userName;
     Player red_player, blue_player;
     Computer computer;
+    HashMap <Integer, Player.piece_type> all_pieces;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -38,6 +41,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_game);
         //column = Integer.valueOf(getIntent().getExtras().getString("column"));
         //row = Integer.valueOf(getIntent().getExtras().getString("row"));
+        all_pieces = new HashMap<Integer,Player.piece_type>();
+        Random rand = new Random();
+        turn = rand.nextInt(2);
+        first_move = true;
         row = 6;
         column = 7;
         red_player = new Player(0);
@@ -47,10 +54,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         //bh = new BoardHandler(column, row);
         computer = new Computer(0, board);
         //System.out.println(bh.toString());
-        btn_flag = (Button) findViewById(R.id.btn_flag);
         //btn_flag.setOnClickListener(this);
-        tv_bombs = (TextView)findViewById(R.id.tvbombsleft);
-        tv_score = (TextView)findViewById(R.id.tvscore);
+        tv_text = (TextView)findViewById(R.id.tvtext);
         userName = getIntent().getExtras().getString("userName");
 
 
@@ -82,6 +87,27 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             if (v.getId() == 2)
             {
                 board.removeTwoButtons(two_buttons);
+                if (turn == 1)
+                {
+                    tv_text.setTextColor(0xff0000ff);
+                    tv_text.setText("Blue start");
+                }
+                else {
+                    tv_text.setText("Red start");
+                    tv_text.setTextColor(0xffff0000);
+                }
+                for(int i = 0; i < 14; i++)
+                {
+                    all_pieces.put(i,computer.getPieces().get(i));
+                }
+                for(int i = 14; i < 28; i++)
+                {
+                    all_pieces.put(i, Player.piece_type.empty);
+                }
+                for(int i = 28; i < 42 ; i++)
+                {
+                    all_pieces.put(i,blue_player.getPieces().get(i));
+                }
             }
         else{
             if (is_first)
@@ -123,65 +149,51 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                         Intent intent = new Intent(this, MainActivity.class);
                         startActivity(intent);
                     }
-
-                    else if (v == btn_flag)
-                    {
-                        is_flag = !is_flag;
-                        if (is_flag)
-                        {
-                            v.setBackgroundResource(R.drawable.ic_flag);
-                        }
-                        else
-                        {
-                            v.setBackgroundResource(R.drawable.ic_btn_mines);
-                        }
-                    }
                     else
                     {
-                        Pair<Integer, Integer> pair = getButtonPos(board, (Button) v);
-                        int x = pair.first;
-                        int y = pair.second;
-                        if ( is_flag && ((Button) v).getText().toString().equals("⛿"))
-                        {
-                            ((Button) v).setText("");
-                            tv_bombs.setText(String.valueOf(Integer.parseInt(tv_bombs.getText().toString())+1));
-                        }
-                        else if (is_flag && ((Button) v).getText().toString().equals(""))
-                        {
-                            ((Button) v).setText("⛿");
-                            tv_bombs.setText(String.valueOf(Integer.parseInt(tv_bombs.getText().toString())-1));
-                            if (tv_bombs.getText().toString().equals("0"))
-                                is_win();
-                        }
-                        else
-                        {
-                            if (((Button) v).getText().toString().equals("⛿"))
-                            {
-                                Toast.makeText(this, "You can't do this ", Toast.LENGTH_SHORT).show();
-                            }
-                            else if (bh.getIntBoard()[y][x] != -1)
-                            {
-                                if (((Button) v).getText().toString().equals(""))
-                                {
-                                    tv_score.setText(String.valueOf(Integer.parseInt(tv_score.getText().toString()) + 10));
-                                    ((Button) v).setText(String.valueOf(bh.getIntBoard()[y][x]));
-                                }
-                            }
-                            else
-                            {
-                                create_lose_dialog();
-                            }
-                        }
+                        if(first_move)
+                            first_move = !first_move((Button) v);
+                        if(!first_move)
+                            second_move((Button) v);
                     }
                 }
             }
         }
+    }
+//else
+//                            {
+//                                create_lose_dialog();
+//                            }
 
 
+    public boolean first_move(Button b)
+    {
+        // לבדוק האם לחץ על חייל שלו
+        // לסמן לאן החייל יכול לזוז
+        // לקלוט את הלחיצה הבאה
+        // לבדוק האם הלחיצה הבאה תקינה
+        // במידה והמשבצת ריקה לעבור, במידה ויש שם חייל לעשות קרב
+        // לבנות משחק
+        Pair<Integer, Integer> pair = getButtonPos(board, (Button) b);
+        int loc = pair.first * column + pair.second;
+        if (turn == 1)//blue
+        {
+            if(blue_player.getPieces().get(loc) == null)
+            {
+                Toast.makeText(this, "You can move your pieces only", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            //if() לצבוע את המשבצות שניתן ללכת אליהן
+        }
+        else
+            Toast.makeText(this, "It is not your turn", Toast.LENGTH_SHORT).show();
+            return false;
     }
 
+    public void second_move(Button b)
+    {
 
-
+    }
     public Pair<Integer, Integer> getButtonPos(Board board, Button button)
     {
         /*
@@ -211,9 +223,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         homebtn_lose = (Button) d_lose.findViewById(R.id.dialogreturn);
         homebtn_lose.setOnClickListener(this);
         tvbombsleft_d = (TextView)d_lose.findViewById(R.id.tvbombsleft_d);
-        tvbombsleft_d.setText("Bombs left - " + tv_bombs.getText().toString());
+        //tvbombsleft_d.setText("Bombs left - " + tv_bombs.getText().toString());
         tv_score_d = (TextView)d_lose.findViewById(R.id.tv_score_d);
-        tv_score_d.setText("Score - " + tv_score.getText().toString());
+        //tv_score_d.setText("Score - " + tv_score.getText().toString());
         d_lose.setCancelable(false);
         d_lose.show();
         updateData();
@@ -248,7 +260,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 }
             });
             tv_score_d = (TextView)d_win.findViewById(R.id.tv_score_d);
-            tv_score_d.setText("Score - " + tv_score.getText().toString());
+            //tv_score_d.setText("Score - " + tv_score.getText().toString());
             d_win.setCancelable(false);
             d_win.show();
             updateData();
@@ -266,7 +278,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         try
         {
             update.put("username", userName);
-            update.put("score", (tv_score.getText().toString()));
+            //update.put("score", (tv_score.getText().toString()));
             update.put("request", "update");
             Client client = new Client(update);
             JSONObject received = client.execute().get();

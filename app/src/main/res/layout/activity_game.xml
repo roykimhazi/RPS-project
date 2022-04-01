@@ -5,43 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
-    <Button
-        android:id="@+id/btn_flag"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="44dp"
-        android:background="@drawable/ic_btn_mines"
-        app:layout_constraintEnd_toStartOf="@+id/tvbombsleft"
-        app:layout_constraintHorizontal_bias="0.439"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <TextView
-        android:id="@+id/tvbombsleft"
+        android:id="@+id/tvtext"
         android:layout_width="wrap_content"
         android:layout_height="100dp"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="25"
+        android:text=""
         android:textSize="40sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tvscore"
-        android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:layout_marginTop="16dp"
-        android:gravity="center"
-        android:text="0"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.802"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -53,7 +27,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvbombsleft">
+        app:layout_constraintTop_toBottomOf="@+id/tvtext">
 
     </LinearLayout>
 
