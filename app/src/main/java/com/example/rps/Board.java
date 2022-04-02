@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.nfc.cardemulation.HostApduService;
 import android.util.DisplayMetrics;
+import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -16,14 +17,22 @@ import java.util.HashMap;
 
 public class Board
 {
+    HashMap<Player.piece_type, String> convert = new HashMap<>();
     private Context context;
     private LinearLayout linearLayout;
     private Button[][] buttons;
     private int row;
     private int column;
 
+
     public Board(Context context, LinearLayout linearLayout, int column, int row)
     {
+        convert.put(Player.piece_type.rock,"R");    //🪨,🪨
+        convert.put(Player.piece_type.paper,"\uD83D\uDCC3");
+        convert.put(Player.piece_type.scissors,"✂");
+        convert.put(Player.piece_type.king,"⛿");
+        convert.put(Player.piece_type.trap,"T");//🪤
+        convert.put(Player.piece_type.empty,"");
         this.column = column;
         this.row = row;
         this.context = context;
@@ -39,10 +48,12 @@ public class Board
                 this.buttons[i][j].setTextSize(32);
                 if(index%2 ==0 )
                 {
-                    this.buttons[i][j].setBackgroundColor(-16711936 );
+                    // 11523061 this.buttons[i][j].setBackgroundColor(-16711936 );
+                    this.buttons[i][j].setBackgroundColor(-5254155 );
                 }
                 else
-                    this.buttons[i][j].setBackgroundColor(0XFF03DAC5 );
+                    //this.buttons[i][j].setBackgroundColor(0XFF03DAC5 );
+                    this.buttons[i][j].setBackgroundColor(-8144144 );
                 index++;
             }
             //index++;
@@ -172,13 +183,6 @@ public class Board
     public void showPieces(int loc, Player p)
     {
         int i_loc = loc;
-        HashMap<Player.piece_type, String> convert = new HashMap<>();
-        convert.put(Player.piece_type.rock,"R");    //🪨,🪨
-        convert.put(Player.piece_type.paper,"\uD83D\uDCC3");
-        convert.put(Player.piece_type.scissors,"✂");
-        convert.put(Player.piece_type.king,"⛿");
-        convert.put(Player.piece_type.trap,"T");//🪤
-        convert.put(Player.piece_type.empty,"");
         for (int i = i_loc / column; i < i_loc / column + 2; i++)
         {
             for(int j = 0; j < 7; j++)
@@ -187,8 +191,20 @@ public class Board
             }
         }
     }
-    public void updateButton(int loc, String txt)
+    public void moveAble(int i, int j)
     {
-
+        buttons[i][j].setText("⌾");
+        buttons[i][j].setTextColor(-2446);
+        //buttons[i][j].setBackgroundColor(-2446);
+    }
+    public void updateButton(int i, int j, Player.piece_type type)
+    {
+        buttons[i][j].setText(convert.get(type));
+        buttons[i][j].setTextColor(-16777216);
+    }
+    public void clearButton(int i, int j)
+    {
+        buttons[i][j].setText("");
+        buttons[i][j].setTextColor(-16777216);
     }
 }

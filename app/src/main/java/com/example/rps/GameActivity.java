@@ -3,9 +3,11 @@ package com.example.rps;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -22,7 +24,7 @@ import java.util.Random;
 public class GameActivity extends AppCompatActivity implements View.OnClickListener {
     LinearLayout linearLayoutBoard, two_buttons;
     Board board;
-    int column, row, turn;
+    int column, row, turn, first_click_loc;
     BoardHandler bh;
     Dialog d_lose, d_win;
     TextView tvbombsleft_d, tv_score_d;
@@ -33,6 +35,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     Player red_player, blue_player;
     Computer computer;
     HashMap <Integer, Player.piece_type> all_pieces;
+    Pair<Integer,Integer> first_click_pair, second_click_pair;
 
 
     @Override
@@ -43,7 +46,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         //row = Integer.valueOf(getIntent().getExtras().getString("row"));
         all_pieces = new HashMap<Integer,Player.piece_type>();
         Random rand = new Random();
-        turn = rand.nextInt(2);
+//        turn = rand.nextInt(2);
+        turn = 1;
         first_move = true;
         row = 6;
         column = 7;
@@ -151,10 +155,14 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     }
                     else
                     {
-                        if(first_move)
-                            first_move = !first_move((Button) v);
                         if(!first_move)
+                        {
                             second_move((Button) v);
+                            first_move = true;
+                        }
+                        else if(first_move)
+                                first_move = !first_move((Button) v);
+
                     }
                 }
             }
@@ -178,12 +186,40 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         int loc = pair.first * column + pair.second;
         if (turn == 1)//blue
         {
+            if(blue_player.getPieces().get(loc) == Player.piece_type.trap)
+            {
+                Toast.makeText(this, "You can't move your trap", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            if(blue_player.getPieces().get(loc) == Player.piece_type.king)
+            {
+                Toast.makeText(this, "You can't move your flag", Toast.LENGTH_SHORT).show();
+                return false;
+            }
             if(blue_player.getPieces().get(loc) == null)
             {
                 Toast.makeText(this, "You can move your pieces only", Toast.LENGTH_SHORT).show();
                 return false;
             }
-            //if() לצבוע את המשבצות שניתן ללכת אליהן
+            first_click_loc = loc;
+            first_click_pair = pair;
+            if(pair.second != 0 && all_pieces.get(loc - 1) == Player.piece_type.empty)//left
+            {
+                board.moveAble(pair.first ,pair.second - 1);
+            }
+            if(pair.second != 6 && all_pieces.get(loc + 1) == Player.piece_type.empty)//right
+            {
+                board.moveAble(pair.first ,pair.second + 1);
+            }
+            if(pair.first != 0 && all_pieces.get(loc - 7) == Player.piece_type.empty)//above
+            {
+                board.moveAble(pair.first - 1 ,pair.second);
+            }
+            if(pair.first != 5 && all_pieces.get(loc + 7) == Player.piece_type.empty)//under
+            {
+                board.moveAble(pair.first + 1,pair.second);
+            }
+            return true;
         }
         else
             Toast.makeText(this, "It is not your turn", Toast.LENGTH_SHORT).show();
@@ -192,8 +228,154 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
 
     public void second_move(Button b)
     {
-
+        Pair<Integer, Integer> pair = getButtonPos(board, (Button) b);
+        int loc = pair.first * column + pair.second;
+        second_click_pair = pair;
+        // normal move
+        // cancel  points
+        // start fight
+        if(all_pieces.get(loc) == Player.piece_type.empty && board.getButtons()[pair.first][pair.second].getText() == "⌾")
+        {
+            Player.piece_type type = blue_player.getPieces().remove(first_click_loc);
+            blue_player.getPieces().put(loc, type);
+            all_pieces.put(first_click_loc, Player.piece_type.empty);
+            all_pieces.put(loc, type);
+            board.updateButton(pair.first, pair.second, type);//update on board
+            board.clearButton(first_click_pair.first, first_click_pair.second);// remove moved piece from last location
+        }
+        else
+            if(blue_player.getPieces().get(loc) != null)
+                Toast.makeText(this, "Not legal move", Toast.LENGTH_SHORT).show();
+            else
+                if(computer.getPieces().get(loc) != Player.piece_type.empty && (loc == first_click_loc + 1 || loc == first_click_loc - 1 || loc == first_click_loc + 7 || loc == first_click_loc - 7))
+                {
+                    startFight(first_click_loc, loc);
+                }
+                else
+                    Toast.makeText(this, "Not legal move", Toast.LENGTH_SHORT).show();
+        clearButtons(first_click_pair);
     }
+
+    public void startFight(int player_loc, int computer_loc)
+    {
+        // לבדוק אם מישהו מהם מנצח רק לפי מה שיש להם עכשיו
+        // אם יש מנצח לקבוע ניצחון ולהזיז את החייל
+        // אחרת לעשות עוד פעם ועוד פעם
+        Player.piece_type player_weapon = all_pieces.get(player_loc);
+        Player.piece_type computer_weapon = all_pieces.get(computer_loc);
+        if(player_weapon != computer_weapon)
+        {
+            if(computer_weapon == Player.piece_type.trap)
+            {
+                // לעשות את האכילה של המלכודת ואת הצגתה.
+                clearAfterFight(player_loc, computer_loc,true);
+            }
+            if (player_weapon == Player.piece_type.rock)
+            {
+                if (computer_weapon == Player.piece_type.scissors)
+                {
+                    clearAfterFight(player_loc, computer_loc, true);
+                    // להפוך את הנשק לגלוי
+                }
+                if(computer_weapon == Player.piece_type.paper)
+                {
+                    clearAfterFight(player_loc, computer_loc, false);
+                }
+            }
+            if (player_weapon == Player.piece_type.scissors)
+            {
+                if (computer_weapon == Player.piece_type.paper)
+                {
+                    clearAfterFight(player_loc, computer_loc, true);
+                    // להפוך את הנשק לגלוי
+                }
+                if(computer_weapon == Player.piece_type.rock)
+                {
+                    clearAfterFight(player_loc, computer_loc, false);
+                }
+            }
+            if (player_weapon == Player.piece_type.paper)
+            {
+                if (computer_weapon == Player.piece_type.rock)
+                {
+                    clearAfterFight(player_loc, computer_loc, true);
+                    // להפוך את הנשק לגלוי
+                }
+                if(computer_weapon == Player.piece_type.scissors)
+                {
+                    clearAfterFight(player_loc, computer_loc, false);
+                }
+            }
+            if (computer_weapon == Player.piece_type.king)
+            {
+                clearAfterFight(player_loc, computer_loc, true);
+                win();
+            }
+            if(computer_weapon == Player.piece_type.trap)
+            {
+                clearAfterFight(player_loc, computer_loc, false);
+            }
+
+        }
+//        else
+//        {
+//            create dialog for choosing again
+//        }
+    }
+
+    public void clearAfterFight(int player_loc, int computer_loc, boolean winner) // true if player won, false if computer won.
+    {
+        if (computer.getPieces().get(computer_loc) == Player.piece_type.trap)
+        {
+            blue_player.getPieces().remove(player_loc);
+            all_pieces.put(player_loc, Player.piece_type.empty);
+            board.clearButton(first_click_pair.first, first_click_pair.second);// remove moved piece from last location
+        }
+        else
+            {
+                if(winner)
+                {
+                    Player.piece_type type = blue_player.getPieces().remove(player_loc);
+                    blue_player.getPieces().put(computer_loc, type);
+                    all_pieces.put(player_loc, Player.piece_type.empty);
+                    all_pieces.put(computer_loc, type);
+                    computer.getPieces().remove(computer_loc);
+                    board.updateButton(second_click_pair.first, second_click_pair.second, type);//update on board
+                    board.clearButton(first_click_pair.first, first_click_pair.second);// remove moved piece from last location
+                }
+                else
+                {
+                    Player.piece_type type = computer.getPieces().remove(computer_loc);
+                    computer.getPieces().put(player_loc, type);
+                    all_pieces.put(computer_loc, Player.piece_type.empty);
+                    all_pieces.put(player_loc, type);
+                    blue_player.getPieces().remove(player_loc);
+                    board.updateButton(first_click_pair.first, first_click_pair.second, type);//update on board
+                    board.clearButton(second_click_pair.first, second_click_pair.second);// remove moved piece from last location
+                }
+        }
+    }
+
+    public void clearButtons(Pair last_pair)
+    {
+        if((int)last_pair.second != 0 && board.getButtons()[(int)last_pair.first][(int)last_pair.second - 1].getText() == "⌾")//left
+        {
+            board.clearButton((int)last_pair.first ,(int)last_pair.second - 1);
+        }
+        if((int)last_pair.second != 6 && board.getButtons()[(int)last_pair.first][(int)last_pair.second + 1].getText() == "⌾")//left
+        {
+            board.clearButton((int)last_pair.first ,(int)last_pair.second + 1);
+        }
+        if((int)last_pair.first != 0 && board.getButtons()[(int)last_pair.first - 1][(int)last_pair.second].getText() == "⌾")//left
+        {
+            board.clearButton((int)last_pair.first - 1 ,(int)last_pair.second);
+        }
+        if((int)last_pair.first != 5 && board.getButtons()[(int)last_pair.first + 1][(int)last_pair.second].getText() == "⌾")//left
+        {
+            board.clearButton((int)last_pair.first + 1, (int)last_pair.second);
+        }
+    }
+
     public Pair<Integer, Integer> getButtonPos(Board board, Button button)
     {
         /*
@@ -231,42 +413,33 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         updateData();
     }
 
-    private void is_win()
+    private void win()
     {
         /*
          *This function checks if the player marked all of the bombs with flags
          */
-        int count = 0;
-        for (int y = 0; y < column; y++)
+
+        d_win = new Dialog(this);
+//        d_win.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        d_win.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+
+        d_win.setContentView(R.layout.dialog_win);
+        homebtn_win = (Button) d_win.findViewById(R.id.dialog_win_return);
+        homebtn_win.setOnClickListener(new View.OnClickListener()
         {
-            for (int x = 0; x < row; x++)
+            @Override
+            public void onClick(View v)
             {
-                if (bh.getIntBoard()[y][x] == -1 && board.getButtons()[y][x].getText().toString().equals("⛿"))
-                    count++;
+                Intent intent = new Intent(com.example.rps.GameActivity.this, MainActivity.class);
+                startActivity(intent);
             }
-        }
-        if(count == 25)
-        {
-            d_win = new Dialog(this);
-            d_win.setContentView(R.layout.dialog_win);
-            homebtn_win = (Button) d_win.findViewById(R.id.dialog_win_return);
-            homebtn_win.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    Intent intent = new Intent(com.example.rps.GameActivity.this, MainActivity.class);
-                    startActivity(intent);
-                }
-            });
-            tv_score_d = (TextView)d_win.findViewById(R.id.tv_score_d);
-            //tv_score_d.setText("Score - " + tv_score.getText().toString());
-            d_win.setCancelable(false);
-            d_win.show();
-            updateData();
-        }
-        else
-            Toast.makeText(this, "You have a mistake ", Toast.LENGTH_SHORT).show();
+        });
+        tv_score_d = (TextView)d_win.findViewById(R.id.tv_score_d);
+        //tv_score_d.setText("Score - " + tv_score.getText().toString());
+        d_win.setCancelable(false);
+        d_win.show();
+        updateData();
+
     }
 
     public void updateData()
