@@ -5,10 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:gravity="center"
+    android:background="@color/colorTransparent"
     android:minHeight="500dp"
     android:minWidth="300dp"
-    >
+    android:orientation="vertical">
+
 
 
     <TextView
@@ -16,7 +18,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="You won!"
-        android:textColor="#000000"
+        android:textColor="#ffffff"
         android:textSize="60sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -30,8 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Score - "
-        android:textColor="#000000"
+        android:textColor="#ffffff"
         android:textSize="40sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,6 +40,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.447" />
+<!--        android:text="Score - "-->
+
 
     <Button
         android:id="@+id/dialog_win_return"

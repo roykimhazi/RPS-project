@@ -49,12 +49,27 @@ public class Board
                 if(index%2 ==0 )
                 {
                     // 11523061 this.buttons[i][j].setBackgroundColor(-16711936 );
-                    this.buttons[i][j].setBackgroundColor(-5254155 );
+                    if (i < 2)
+                        this.buttons[i][j].setBackgroundColor(0xFFB38282);// red background color
+                    else {
+                        if (i < 4)
+                            this.buttons[i][j].setBackgroundColor(0xFF95F385);// natural background color
+                        else
+                            this.buttons[i][j].setBackgroundColor(-5254155);// blue background color
+                    }
                 }
                 else
                     //this.buttons[i][j].setBackgroundColor(0XFF03DAC5 );
-                    this.buttons[i][j].setBackgroundColor(-8144144 );
-                index++;
+                    if (i < 2)
+                        this.buttons[i][j].setBackgroundColor(0xFFDC4646);// red background color
+                    else
+                        {
+                        if (i < 4)
+                            this.buttons[i][j].setBackgroundColor(0xFF46FF39);// natural background color
+                        else
+                            this.buttons[i][j].setBackgroundColor(-8144144);// blue background color
+                    }
+                    index++;
             }
             //index++;
         }
@@ -197,13 +212,30 @@ public class Board
         buttons[i][j].setTextColor(-2446);
         //buttons[i][j].setBackgroundColor(-2446);
     }
-    public void updateButton(int i, int j, Player.piece_type type)
+    public void updateButton(int i, int j, Player.piece_type type, boolean is_player)
     {
+        if (is_player == false) {
+            if (((i * j) + j) % 2 == 0)
+                buttons[i][j].setBackgroundColor(0xFFB38282);
+            else
+                buttons[i][j].setBackgroundColor(0xFFDC4646);
+        }
+        else
+        {
+            if (((i * j) + j) % 2 == 0)
+                buttons[i][j].setBackgroundColor(-5254155);
+            else
+                buttons[i][j].setBackgroundColor(-8144144);
+        }
         buttons[i][j].setText(convert.get(type));
         buttons[i][j].setTextColor(-16777216);
     }
     public void clearButton(int i, int j)
     {
+        if (((i * j) + j) % 2 == 0)
+            buttons[i][j].setBackgroundColor(0xFF95F385);
+        else
+            buttons[i][j].setBackgroundColor(0xFF46FF39);
         buttons[i][j].setText("");
         buttons[i][j].setTextColor(-16777216);
     }

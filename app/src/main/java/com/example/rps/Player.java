@@ -4,7 +4,7 @@ import java.util.Dictionary;
 import java.util.HashMap;
 
 public class Player {
-    enum piece_type {
+    enum piece_type {// להוסיף תכונה בוליאנית של האם גלוי או לא.
         empty,
         rock,
         paper,

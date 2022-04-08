@@ -35,8 +35,8 @@ public class Computer extends Player {
         {
             for (int j = 0; j < 7; j++)
             {
-                //board.getButtons()[i][j].setText("?");
-                board.showPieces(0,this);
+                board.getButtons()[i][j].setText("?");
+                //board.showPieces(0,this);
             }
         }
     }

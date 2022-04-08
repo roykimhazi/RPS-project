@@ -9,6 +9,7 @@ import android.util.Pair;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,16 +27,18 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     Board board;
     int column, row, turn, first_click_loc;
     BoardHandler bh;
-    Dialog d_lose, d_win;
+    Dialog d_lose, d_win, d_tie;
     TextView tvbombsleft_d, tv_score_d;
     Button homebtn_lose, homebtn_win, btn_flag;
+    ImageButton re_scissors, re_rock, re_paper;
     boolean is_flag = false, is_first = true, is_sec = true, first_move;
-    TextView tv_text;
+    TextView tv_text, tv_type_chose;
     String userName;
     Player red_player, blue_player;
     Computer computer;
     HashMap <Integer, Player.piece_type> all_pieces;
     Pair<Integer,Integer> first_click_pair, second_click_pair;
+    Player.piece_type chosen;
 
 
     @Override
@@ -61,7 +64,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         //btn_flag.setOnClickListener(this);
         tv_text = (TextView)findViewById(R.id.tvtext);
         userName = getIntent().getExtras().getString("userName");
-
 
     }
 
@@ -148,6 +150,26 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 else
                 {
+
+                    if(v == re_scissors)
+                    {
+                        int loc = first_click_pair.first * column + first_click_pair.second;
+                        chosen = Player.piece_type.scissors;
+                        update_player_after_tie(loc);
+                    }
+                    if(v == re_rock)
+                    {
+                        int loc = first_click_pair.first * column + first_click_pair.second;
+                        chosen = Player.piece_type.rock;
+                        update_player_after_tie(loc);
+                    }
+                    if(v == re_paper)
+                    {
+                        int loc = first_click_pair.first * column + first_click_pair.second;
+                        chosen = Player.piece_type.paper;
+                        update_player_after_tie(loc);
+                        d_tie.dismiss();
+                    }
                     if (v == homebtn_lose)
                     {
                         Intent intent = new Intent(this, MainActivity.class);
@@ -240,7 +262,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             blue_player.getPieces().put(loc, type);
             all_pieces.put(first_click_loc, Player.piece_type.empty);
             all_pieces.put(loc, type);
-            board.updateButton(pair.first, pair.second, type);//update on board
+            board.updateButton(pair.first, pair.second, type, true);//update on board
             board.clearButton(first_click_pair.first, first_click_pair.second);// remove moved piece from last location
         }
         else
@@ -254,6 +276,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 else
                     Toast.makeText(this, "Not legal move", Toast.LENGTH_SHORT).show();
         clearButtons(first_click_pair);
+        // להעביר את התור לשחקן השני
+
     }
 
     public void startFight(int player_loc, int computer_loc)
@@ -317,16 +341,25 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             }
 
         }
-//        else
-//        {
-//            create dialog for choosing again
-//        }
+        else
+        {
+            // לעשות את הבחירה מחדש של המחשב
+            create_tie_dialog(player_weapon);
+            // לזמן קרב שוב עם החדשים
+        }
     }
-
+    public void update_player_after_tie(int player_loc)
+    {
+        blue_player.getPieces().put(player_loc, chosen);
+        all_pieces.put(player_loc, chosen);
+        board.updateButton(first_click_pair.first, first_click_pair.second, chosen, true);//update on board
+    }
     public void clearAfterFight(int player_loc, int computer_loc, boolean winner) // true if player won, false if computer won.
     {
         if (computer.getPieces().get(computer_loc) == Player.piece_type.trap)
         {
+            tv_text.setTextColor(0xffff0000);
+            tv_text.setText("Your player fell into red " + Player.piece_type.trap.toString());
             blue_player.getPieces().remove(player_loc);
             all_pieces.put(player_loc, Player.piece_type.empty);
             board.clearButton(first_click_pair.first, first_click_pair.second);// remove moved piece from last location
@@ -336,22 +369,24 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 if(winner)
                 {
                     Player.piece_type type = blue_player.getPieces().remove(player_loc);
+                    tv_text.setTextColor(0xff0000ff);
+                    tv_text.setText("Blue won with " + type.toString());
                     blue_player.getPieces().put(computer_loc, type);
                     all_pieces.put(player_loc, Player.piece_type.empty);
                     all_pieces.put(computer_loc, type);
                     computer.getPieces().remove(computer_loc);
-                    board.updateButton(second_click_pair.first, second_click_pair.second, type);//update on board
+                    board.updateButton(second_click_pair.first, second_click_pair.second, type, true);//update on board
                     board.clearButton(first_click_pair.first, first_click_pair.second);// remove moved piece from last location
                 }
                 else
                 {
-                    Player.piece_type type = computer.getPieces().remove(computer_loc);
-                    computer.getPieces().put(player_loc, type);
-                    all_pieces.put(computer_loc, Player.piece_type.empty);
-                    all_pieces.put(player_loc, type);
+                    Player.piece_type type = computer.getPieces().get(computer_loc);
+                    tv_text.setTextColor(0xffff0000);
+                    tv_text.setText("Red won with " + type.toString());
+                    all_pieces.put(player_loc, Player.piece_type.empty);
                     blue_player.getPieces().remove(player_loc);
-                    board.updateButton(first_click_pair.first, first_click_pair.second, type);//update on board
-                    board.clearButton(second_click_pair.first, second_click_pair.second);// remove moved piece from last location
+                    board.updateButton(second_click_pair.first, second_click_pair.second, type, false);
+                    board.clearButton(first_click_pair.first, first_click_pair.second);// remove moved piece from last location
                 }
         }
     }
@@ -413,6 +448,49 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         updateData();
     }
 
+    public void create_tie_dialog(Player.piece_type type)
+    {
+        d_tie = new Dialog(this);
+        d_tie.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        d_tie.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        d_tie.setContentView(R.layout.dialog_tie);
+        re_scissors = (ImageButton) d_tie.findViewById(R.id.scissors);
+        re_scissors.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                chosen = Player.piece_type.scissors;
+                update_player_after_tie(first_click_loc);
+                d_tie.dismiss();
+            }
+        });
+        re_rock = (ImageButton) d_tie.findViewById(R.id.rock);
+        re_rock.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                chosen = Player.piece_type.rock;
+                update_player_after_tie(first_click_loc);
+                d_tie.dismiss();            }
+        });
+        re_paper = (ImageButton) d_tie.findViewById(R.id.paper);
+        re_paper.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                chosen = Player.piece_type.paper;
+                update_player_after_tie(first_click_loc);
+                d_tie.dismiss();
+            }
+        });
+        tv_type_chose = (TextView)d_tie.findViewById(R.id.tv_type_chose);
+        tv_type_chose.setText(tv_type_chose.getText().toString() + type.toString());
+        d_tie.setCancelable(false);
+        d_tie.show();
+    }
     private void win()
     {
         /*
@@ -420,10 +498,9 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
          */
 
         d_win = new Dialog(this);
-//        d_win.requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        d_win.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-
-        d_win.setContentView(R.layout.dialog_win);
+        d_win.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        d_win.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        d_win.setContentView(R.layout.dialog_win);//dialog_win
         homebtn_win = (Button) d_win.findViewById(R.id.dialog_win_return);
         homebtn_win.setOnClickListener(new View.OnClickListener()
         {
