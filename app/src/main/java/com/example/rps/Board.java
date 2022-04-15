@@ -17,7 +17,7 @@ import java.util.HashMap;
 
 public class Board
 {
-    HashMap<Player.piece_type, String> convert = new HashMap<>();
+    HashMap<Types, String> convert = new HashMap<>();
     private Context context;
     private LinearLayout linearLayout;
     private Button[][] buttons;
@@ -27,12 +27,12 @@ public class Board
 
     public Board(Context context, LinearLayout linearLayout, int column, int row)
     {
-        convert.put(Player.piece_type.rock,"R");    //🪨,🪨
-        convert.put(Player.piece_type.paper,"\uD83D\uDCC3");
-        convert.put(Player.piece_type.scissors,"✂");
-        convert.put(Player.piece_type.king,"⛿");
-        convert.put(Player.piece_type.trap,"T");//🪤
-        convert.put(Player.piece_type.empty,"");
+        convert.put(Types.rock,"R");    //🪨,🪨
+        convert.put(Types.paper,"\uD83D\uDCC3");
+        convert.put(Types.scissors,"✂");
+        convert.put(Types.king,"⛿");
+        convert.put(Types.trap,"T");//🪤
+        convert.put(Types.empty,"");
         this.column = column;
         this.row = row;
         this.context = context;
@@ -202,7 +202,7 @@ public class Board
         {
             for(int j = 0; j < 7; j++)
             {
-                buttons[i][j].setText(convert.get(p.getPieces().get(loc++)));
+                buttons[i][j].setText(convert.get(p.getPieces().get(loc++).getType()));
             }
         }
     }
@@ -212,17 +212,17 @@ public class Board
         buttons[i][j].setTextColor(-2446);
         //buttons[i][j].setBackgroundColor(-2446);
     }
-    public void updateButton(int i, int j, Player.piece_type type, boolean is_player)
+    public void updateButton(int i, int j, Types type, boolean is_player)
     {
         if (is_player == false) {
-            if (((i * j) + j) % 2 == 0)
+            if (((i * column) + j) % 2 == 1)
                 buttons[i][j].setBackgroundColor(0xFFB38282);
             else
                 buttons[i][j].setBackgroundColor(0xFFDC4646);
         }
         else
         {
-            if (((i * j) + j) % 2 == 0)
+            if (((i * column) + j) % 2 == 1)// pair.first * column + pair.second;
                 buttons[i][j].setBackgroundColor(-5254155);
             else
                 buttons[i][j].setBackgroundColor(-8144144);
@@ -232,7 +232,7 @@ public class Board
     }
     public void clearButton(int i, int j)
     {
-        if (((i * j) + j) % 2 == 0)
+        if (((i * column) + j) % 2 == 1)
             buttons[i][j].setBackgroundColor(0xFF95F385);
         else
             buttons[i][j].setBackgroundColor(0xFF46FF39);

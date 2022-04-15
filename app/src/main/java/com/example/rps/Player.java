@@ -4,29 +4,21 @@ import java.util.Dictionary;
 import java.util.HashMap;
 
 public class Player {
-    enum piece_type {// להוסיף תכונה בוליאנית של האם גלוי או לא.
-        empty,
-        rock,
-        paper,
-        scissors,
-        trap,
-        king
-    }
-    private HashMap<Integer, piece_type> pieces;
+    private HashMap<Integer, Piece_type> pieces;
 
-    public HashMap<Integer, piece_type> getPieces()
+    public HashMap<Integer, Piece_type> getPieces()
     {
         return pieces;
     }
 
     public Player(int loc)
     {
-        pieces = new HashMap<Integer, piece_type>();
+        pieces = new HashMap<Integer, Piece_type>();
         for(int i = loc; i < loc + 2; i++)
         {
             for(int j = 0; j < 7; j++)
             {
-                this.pieces.put(i*7+j,piece_type.empty);
+                this.pieces.put(i*7+j, Piece_type.get_empty_h());
             }
         }
     }
@@ -34,8 +26,8 @@ public class Player {
     {
         for (int i = loc; i < 14 + loc; i++)
         {
-            if (pieces.get(i) != piece_type.king && pieces.get(i) != piece_type.trap)
-                pieces.put(i, piece_type.empty);
+            if (pieces.get(i).getType() != Types.king && pieces.get(i).getType() != Types.trap)
+                pieces.put(i, Piece_type.get_empty_h());
         }
     }
 
@@ -49,9 +41,9 @@ public class Player {
                 while (!foundPlace)
                 {
                     int x = (int) (Math.random() * (14));
-                    if (pieces.get(loc + x) == piece_type.empty)
+                    if (pieces.get(loc + x).getType() == Types.empty)
                     {
-                        pieces.put(loc + x, piece_type.paper);
+                        pieces.put(loc + x, Piece_type.get_rock_h());
                         foundPlace = true;
                     }
                 }
@@ -62,9 +54,9 @@ public class Player {
                     while (!foundPlace)
                     {
                         int x = (int) (Math.random() * (14));
-                        if (pieces.get(loc + x) == piece_type.empty)
+                        if (pieces.get(loc + x).getType() == Types.empty)
                         {
-                            pieces.put(loc + x, piece_type.rock);
+                            pieces.put(loc + x, Piece_type.get_paper_h());
                             foundPlace = true;
                         }
                     }
@@ -74,9 +66,9 @@ public class Player {
                     while (!foundPlace)
                     {
                         int x = (int) (Math.random() * (14));
-                        if (pieces.get(loc + x) == piece_type.empty)
+                        if (pieces.get(loc + x).getType() == Types.empty)
                         {
-                            pieces.put(loc + x, piece_type.scissors);
+                            pieces.put(loc + x, Piece_type.get_scissors_h());
                             foundPlace = true;
                         }
                     }
