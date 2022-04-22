@@ -1,6 +1,10 @@
 package com.example.rps;
 
-public enum Types {
+public enum Types
+{
+    /*
+        This enum is used in every data struct.
+     */
     empty,
     rock,
     paper,

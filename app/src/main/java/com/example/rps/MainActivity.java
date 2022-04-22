@@ -19,8 +19,12 @@ import android.widget.VideoView;
 
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
+public class MainActivity extends AppCompatActivity implements View.OnClickListener
+{
+    /*
+        This class represent the home page of the application.
+        It contains buttons and music.
+     */
     TextView tv_column, tv_row;
     EditText playerName;
     Button btnStart, btnSound, leaderboard, btn_settings, btn_check;
@@ -33,7 +37,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -67,6 +72,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v)
     {
+        /*
+            This function checks which button was pressed and operate accordingly.
+            This function receives the view that pressed.
+         */
         if (v == btn_settings)
         {
             create_settings_dialog();
@@ -124,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void create_settings_dialog()
         /*
-         *This function create the settings dialog
+            This function creates the settings dialog.
          */
     {
         d_settings = new Dialog(this);

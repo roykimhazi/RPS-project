@@ -3,16 +3,29 @@ package com.example.rps;
 import java.util.Dictionary;
 import java.util.HashMap;
 
-public class Player {
+public class Player
+{
+    /*
+        This class represent the Player side.
+         It contains data of the pieces.
+    */
     private HashMap<Integer, Piece_type> pieces;
+    protected GameActivity gameActivity;
 
-    public HashMap<Integer, Piece_type> getPieces()
+    public Player(Player player)
     {
-        return pieces;
+        pieces = new HashMap<Integer, Piece_type>();
+        for (int key : player.getPieces().keySet())
+        {
+            this.pieces.put(key,player.getPieces().get(key));
+        }
+        this.gameActivity = new GameActivity();
+        gameActivity.all_pieces = player.gameActivity.getCopy_of_All_pieces();
+        gameActivity.blue_player = this;
     }
-
-    public Player(int loc)
+    public Player(int loc, GameActivity ga)
     {
+        gameActivity = ga;
         pieces = new HashMap<Integer, Piece_type>();
         for(int i = loc; i < loc + 2; i++)
         {
@@ -22,8 +35,15 @@ public class Player {
             }
         }
     }
+    public HashMap<Integer, Piece_type> getPieces()
+    {
+        return pieces;
+    }
     public void resetPieces(int loc)
     {
+        /*
+            This function reset all pieces to empty.
+         */
         for (int i = loc; i < 14 + loc; i++)
         {
             if (pieces.get(i).getType() != Types.king && pieces.get(i).getType() != Types.trap)
@@ -33,6 +53,9 @@ public class Player {
 
     public void spread_pieces(int loc)
     {
+        /*
+           This function spreads 12 weapon pieces randomly.
+        */
         for (int i = 0; i < 12; i++)
         {
             boolean foundPlace = false;
@@ -48,7 +71,8 @@ public class Player {
                     }
                 }
             }
-            else{
+            else
+                {
                 if(i<8)
                 {
                     while (!foundPlace)
