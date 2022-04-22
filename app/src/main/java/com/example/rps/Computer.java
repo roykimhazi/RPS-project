@@ -25,9 +25,9 @@ public class Computer extends Player {
 
     protected HashMap<Integer, Piece_type> guess;
 
-    public Computer (Computer computer)
+    public Computer (Computer computer, Player player)
     {
-        super(computer);
+        super(player, computer);
         this.count_scissors = computer.count_scissors;
         this.count_rock = computer.count_rock;
         this.count_paper = computer.count_paper;
@@ -383,14 +383,14 @@ public class Computer extends Player {
             This function makes a move by using MCTS and Heuristic function.
          */
         Pair<Integer,Integer> chosen_move;
-        chosen_move = MCTS_Node.StartMCTS(gameActivity.blue_player, this);
-        whichMove(all_pieces, chosen_move.first, chosen_move.second, board, tv_text );
-//        List<Pair<Integer,Integer>> moves_list = getPossibleMoves(all_pieces, turn); // This list contains all possible moves.
-//        if (!moves_list.isEmpty())
-//        {
-//            int i = chooseBestMove(moves_list, turn);
-//            whichMove(all_pieces, moves_list.get(i).first, moves_list.get(i).second,board,tv_text );
-//        }
+//        chosen_move = MCTS_Node.StartMCTS(gameActivity.blue_player, this);
+//        whichMove(all_pieces, chosen_move.first, chosen_move.second, board, tv_text );
+        List<Pair<Integer,Integer>> moves_list = getPossibleMoves(all_pieces, turn); // This list contains all possible moves.
+        if (!moves_list.isEmpty())
+        {
+            int i = chooseBestMove(moves_list, turn);
+            whichMove(all_pieces, moves_list.get(i).first, moves_list.get(i).second,board,tv_text );
+        }
         //whichMove(all_pieces, first_loc, rand_loc, board);
     }
 
@@ -415,7 +415,7 @@ public class Computer extends Player {
     {
 
         Simulation new_simulation;
-        Simulation simulation = new Simulation(gameActivity.blue_player, this, gameActivity.all_pieces, 0, true, false, 0 , 0);
+        Simulation simulation = new Simulation(gameActivity.blue_player, this, gameActivity.all_pieces, 0, turn, false, 0 , 0);
         double rate_of_current_pos = simulation.getRate();
         double rate_of_moved_loc;
         double [] rates = new double[moves_list.size()];
@@ -423,7 +423,8 @@ public class Computer extends Player {
         Pair<Integer,Integer> temp_p;
         for (int i = 0; i < moves_list.size(); i++)
         {
-            new_simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(),0, false, true, moves_list.get(i).first , moves_list.get(i).second);
+            new_simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(),0, turn, true, moves_list.get(i).first , moves_list.get(i).second);
+            new_simulation.doMove(moves_list.get(i).first , moves_list.get(i).second);
             rate_of_moved_loc = new_simulation.getRate();
             rate_of_current_pos = rate_of_moved_loc - rate_of_current_pos;
             rates[i] = rate_of_current_pos;
@@ -443,6 +444,8 @@ public class Computer extends Player {
                 }
             }
         }
+        for (int i = 0; i < moves_list.size() - 1; i++)
+            System.out.println("Move number - " + i + " at location : " + moves_list.get(i).first + " to: " + moves_list.get(i).second + " rate = " + rates[i]);
         return rates[0];
     }
 
@@ -462,6 +465,7 @@ public class Computer extends Player {
         for (int i = 0; i < moves_list.size(); i++)
         {
             new_simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(),0, false, true, moves_list.get(i).first , moves_list.get(i).second);
+            new_simulation.doMove(moves_list.get(i).first , moves_list.get(i).second);
             rate_of_moved_loc = new_simulation.getRate();
             if (rate_of_moved_loc - rate_of_current_pos > best_move_rate)
             {

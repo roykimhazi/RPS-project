@@ -23,6 +23,18 @@ public class Player
         gameActivity.all_pieces = player.gameActivity.getCopy_of_All_pieces();
         gameActivity.blue_player = this;
     }
+
+    public Player(Player player, Computer computer)
+    {
+        pieces = new HashMap<Integer, Piece_type>();
+        for (int key : computer.getPieces().keySet())
+        {
+            this.pieces.put(key,computer.getPieces().get(key));
+        }
+        this.gameActivity = new GameActivity();
+        gameActivity.all_pieces = computer.gameActivity.getCopy_of_All_pieces();
+        gameActivity.blue_player = new Player(player);
+    }
     public Player(int loc, GameActivity ga)
     {
         gameActivity = ga;
