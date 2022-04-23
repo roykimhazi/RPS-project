@@ -37,9 +37,9 @@ public class Computer extends Player {
             this.guess.put(key,computer.guess.get(key));
         }
     }
-    public Computer(int loc, Board board , GameActivity ga)
+    public Computer(int loc, Board board , GameActivity ga, boolean all_expose)
     {
-        super(loc, ga);
+        super(loc, ga, all_expose);
         count_paper = 4;
         count_rock = 4;
         count_scissors = 4;
@@ -50,7 +50,10 @@ public class Computer extends Player {
             int x = (int) (Math.random() * (14));
             if (x < 7)
             {
-                getPieces().put(loc + x, Piece_type.get_king_h());
+                if (all_expose)
+                    getPieces().put(loc + x, Piece_type.get_king());
+                else
+                    getPieces().put(loc + x, Piece_type.get_king_h());
                 //getPieces().get(loc + x).hide();
                 foundPlace = true;
             }
@@ -61,22 +64,30 @@ public class Computer extends Player {
             int x = (int) (Math.random() * (14));
             if (getPieces().get(loc + x).getType() == Types.empty)
             {
-                getPieces().put(loc + x, Piece_type.get_trap_h());
+                if (all_expose)
+                    getPieces().put(loc + x, Piece_type.get_trap());
+                else
+                    getPieces().put(loc + x, Piece_type.get_trap_h());
                 //getPieces().get(loc + x).hide();
                 foundPlace = true;
             }
         }
-        spread_pieces(0);
-        initComputerPieces(board);
-        for(int i = loc; i < loc + 2; i++)
+        spread_pieces(0, all_expose);
+        initComputerPieces(board, all_expose);
+        if (all_expose)
+            updateGuesses(ga.blue_player.getPieces());
+        else
         {
-            for(int j = 0; j < 7; j++)
+            for(int i = loc; i < loc + 2; i++)
             {
-                guess.put(i*7+j + 28, Piece_type.get_empty_h());
-                //guess.get(i*7+j + 28).hide();
+                for(int j = 0; j < 7; j++)
+                {
+                    guess.put(i*7+j + 28, Piece_type.get_empty_h());
+                    //guess.get(i*7+j + 28).hide();
+                }
             }
+            initGuess();
         }
-        initGuess();
     }
 
     public int getCount_scissors()
@@ -91,7 +102,7 @@ public class Computer extends Player {
     {
         return count_paper;
     }
-    private void initComputerPieces(Board board)
+    private void initComputerPieces(Board board, boolean all_expose)
     {
         /*
             This function is initializing the PC pieces on the board.
@@ -100,8 +111,10 @@ public class Computer extends Player {
         {
             for (int j = 0; j < 7; j++)
             {
-                board.getButtons()[i][j].setText("?");
-                //board.showPieces(0,this);
+                if (all_expose)
+                    board.showPieces(0,this);
+                else
+                    board.getButtons()[i][j].setText("?");
             }
         }
     }
@@ -383,14 +396,14 @@ public class Computer extends Player {
             This function makes a move by using MCTS and Heuristic function.
          */
         Pair<Integer,Integer> chosen_move;
-        chosen_move = MCTS_Node.StartMCTS(gameActivity.blue_player, this);
-        whichMove(all_pieces, chosen_move.first, chosen_move.second, board, tv_text );
-//        List<Pair<Integer,Integer>> moves_list = getPossibleMoves(all_pieces, turn); // This list contains all possible moves.
-//        if (!moves_list.isEmpty())
-//        {
-//            int i = chooseBestMove(moves_list, turn);
-//            whichMove(all_pieces, moves_list.get(i).first, moves_list.get(i).second,board,tv_text );
-//        }
+//        chosen_move = MCTS_Node.StartMCTS(gameActivity.blue_player, this);
+//        whichMove(all_pieces, chosen_move.first, chosen_move.second, board, tv_text );
+        List<Pair<Integer,Integer>> moves_list = getPossibleMoves(all_pieces, turn); // This list contains all possible moves.
+        if (!moves_list.isEmpty())
+        {
+            int i = chooseBestMove(moves_list, turn);
+            whichMove(all_pieces, moves_list.get(i).first, moves_list.get(i).second,board,tv_text );
+        }
         //whichMove(all_pieces, first_loc, rand_loc, board);
     }
 

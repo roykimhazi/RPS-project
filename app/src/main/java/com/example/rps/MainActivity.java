@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -25,15 +27,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         This class represent the home page of the application.
         It contains buttons and music.
      */
-    TextView tv_column, tv_row;
     EditText playerName;
-    Button btnStart, btnSound, leaderboard, btn_settings, btn_check;
-    MediaPlayer backsound, victory;
-    SeekBar sb_column, sb_row;
+    Button btnStart, btnSound, info_dialog, btn_settings, no_button, yes_button, exit_button;
+    MediaPlayer backsound;
     AudioManager am;
-    Dialog d_settings;
-    int intent_column, intent_row;
+    Dialog d_settings, d_info;
     boolean isMute = true;
+    boolean is_exposed = false;
 
 
     @Override
@@ -50,8 +50,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnSound = (Button) findViewById(R.id.btnmute);
         btnSound.setOnClickListener(this);
 
-        leaderboard = (Button) findViewById(R.id.leaderboard);
-        leaderboard.setOnClickListener(this);
+        info_dialog = (Button) findViewById(R.id.info_dialog);
+        info_dialog.setOnClickListener(this);
 
         btn_settings = (Button)findViewById(R.id.btn_settings);
         btn_settings.setOnClickListener(this);
@@ -64,7 +64,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         backsound.setLooping(true);
         backsound.start();
 
-        victory = MediaPlayer.create(this, R.raw.leaderboardsound);
 
 
     }
@@ -101,17 +100,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             {
                 backsound.setVolume(0, 0);
                 Intent intent = new Intent(this, GameActivity.class);
-                intent.putExtra("userName", playerName.getText().toString());
-                if(tv_column == null )
-                {
-                    intent.putExtra("column", "5");
-                    intent.putExtra("row", "5");
-                }
+                //intent.putExtra("userName", playerName.getText().toString());
+                if (is_exposed)
+                    intent.putExtra("is_exposed","1");
                 else
-                {
-                    intent.putExtra("column", tv_column.getText().toString());
-                    intent.putExtra("row", tv_row.getText().toString());
-                }
+                    intent.putExtra("is_exposed","0");
                 startActivity(intent);
             }
             else
@@ -119,17 +112,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(this, "You have to enter your name first ", Toast.LENGTH_LONG).show();
             }
         }
-        else if (v == leaderboard)
+        else if (v == info_dialog)
         {
-            backsound.setVolume(0, 0);
-            victory.setVolume(1, 1);
-            victory.start();
-            Intent intent = new Intent(this, LeaderboardActivity.class);
-            startActivity(intent);
+            create_info_dialog();
         }
     }
 
-
+    private void create_info_dialog()
+    {
+        /*
+            This function creates the info dialog.
+         */
+        d_info = new Dialog(this);
+        d_info.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        d_info.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        d_info.setContentView(R.layout.dialog_info);
+        exit_button = (Button) d_info.findViewById(R.id.exit_button);
+        exit_button.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                d_info.cancel();
+            }
+        });
+        d_info.setCancelable(true);
+        d_info.show();
+    }
 
     private void create_settings_dialog()
         /*
@@ -137,78 +146,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          */
     {
         d_settings = new Dialog(this);
+        d_settings.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        d_settings.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         d_settings.setContentView(R.layout.dialog_gamesettings);
-        btn_check = (Button) d_settings.findViewById(R.id.dialogreturn);
-        btn_check.setOnClickListener(new View.OnClickListener()
+        no_button = (Button) d_settings.findViewById(R.id.no_button);
+        no_button.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
+                is_exposed = false;
                 d_settings.cancel();
             }
         });
-        tv_column = (TextView)d_settings.findViewById(R.id.tv_column);
-        tv_row = (TextView)d_settings.findViewById(R.id.tv_row);
-        sb_column = (SeekBar) d_settings.findViewById(R.id.sb_column);
-        sb_column.setBackgroundColor(getColor(R.color.black));
-        sb_column.setProgress(5);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
-            sb_column.setMin(3);
-        }
-        sb_column.setMax(15);
-
-        sb_row = (SeekBar) d_settings.findViewById(R.id.sb_row);
-        sb_row.setBackgroundColor(getColor(R.color.black));
-        sb_row.setProgress(5);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-        {
-            sb_row.setMin(3);
-        }
-        sb_row.setMax(15);
-        tv_column.setText(String.valueOf(sb_column.getProgress()));
-        tv_row.setText(String.valueOf(sb_row.getProgress()));
-        sb_column.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        yes_button = (Button) d_settings.findViewById(R.id.yes_button);
+        yes_button.setOnClickListener(new View.OnClickListener()
         {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b)
+            public void onClick(View v)
             {
-                tv_column.setText(String.valueOf(i));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar)
-            {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar)
-            {
-
+                is_exposed = true;
+                d_settings.cancel();
             }
         });
-        sb_row.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
-        {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b)
-            {
-                tv_row.setText(String.valueOf(i));
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar)
-            {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar)
-            {
-
-            }
-        });
-        d_settings.setCancelable(false);
+        d_settings.setCancelable(true);
         d_settings.show();
     }
 }

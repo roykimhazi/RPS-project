@@ -19,9 +19,6 @@ public class MCTS_Node
     private Player player;   // The player who made the move
     private Computer computer;
     private boolean turn; // True if player turn, else false.
-//    private static StopWatch stopWatch = new StopWatch();
-    // Keeps the index of the maximal child the node has visited -
-    // after each expansion, the number will grow by one, as long as it's smaller than the amount of possible moves.
     private int maxChild;
 
     public MCTS_Node(Pair<Integer, Integer> moveLocation, Player player, Computer computer, boolean turn)
@@ -33,13 +30,10 @@ public class MCTS_Node
         this.player = new Player(player);
         this.computer = new Computer(computer, player);
         this.turn = turn;
-        maxChild = -1;          // No expansion happened yet.
+        maxChild = -1; // No expansion happened yet.
     }
 
-    /// <summary>
-    /// Find the move that will most likely lead to the AI's win.
-    /// </summary>
-    /// <returns>Location of best move on board.</returns>
+    // Find the move that will most likely lead to the AI's win.
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static Pair<Integer,Integer> StartMCTS(Player player, Computer computer)
     {
@@ -63,10 +57,7 @@ public class MCTS_Node
         return moveLocation;
     }
 
-    /// <summary>
-    /// Finds the best node according to UCB1 results.
-    /// </summary>
-    /// <returns>The index of the best node in the nodes.</returns>
+    // Finds the best node according to UCB1 results.
     public int FindBestNode()
     {
         maxChild++;
@@ -89,10 +80,7 @@ public class MCTS_Node
         return bestNodeIndex;
     }
 
-    /// <summary>
-    /// Runs MCTS search until it reaches end of game.
-    /// </summary>
-    /// <returns></returns>
+    // Runs MCTS search until it reaches end of game.
     public double RunMCTS()
     {
         double score = 0;
@@ -123,14 +111,14 @@ public class MCTS_Node
         maxChild = 0;
     }
 
-    /// <summary>
-    /// Returns the score of the UCB1 formule for current node.
-    /// Formula: Vi + 2 * sqrt((lnN) / ni)
-    ///     Vi - average value (totalScore/numberOfVisits) of given node
-    ///     N - overall visits from PARENT node (numberOfVisits of parent)
-    ///     ni - numberOfVisits of current node
-    /// </summary>
-    /// <returns></returns>
+    /*
+        Returns the score of the UCB1 formule for current node.
+        Formula: Vi + 2 * sqrt((lnN) / ni)
+        Vi - average value (totalScore/numberOfVisits) of given node
+        N - overall visits from PARENT node (numberOfVisits of parent)
+        ni - numberOfVisits of current node
+     */
+
     public double UCB1(int N)
     {
         double Vi = totalScore / numberOfVisits;
@@ -139,24 +127,19 @@ public class MCTS_Node
 
 
 
-    /// <summary>
-    /// Starts simulation for given node.
-    /// </summary>
+
+    // Starts simulation for given node.
     private double StartSimulation(Pair<Integer,Integer> chosenMoveLocation)
     {
         // Place chosen move on board.
         computer.makeMoveMCTS(chosenMoveLocation, turn);
 
-        double score = Simulation(true, 40);
+        double score = Simulation(true, 2);
         totalScore += score;
         return score;
     }
 
-    /// <summary>
-    /// Runs a simulation of the game;
-    /// </summary>
-    /// <param name="player"></param>
-    /// <returns></returns>
+    // Runs a simulation of the game;
     private double Simulation(boolean turn, int countDown)
     {
         Pair<Pair<Integer,Integer>, Double> move_and_rate;

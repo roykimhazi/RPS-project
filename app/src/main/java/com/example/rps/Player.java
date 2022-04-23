@@ -35,7 +35,7 @@ public class Player
         gameActivity.all_pieces = computer.gameActivity.getCopy_of_All_pieces();
         gameActivity.blue_player = new Player(player);
     }
-    public Player(int loc, GameActivity ga)
+    public Player(int loc, GameActivity ga, boolean all_expose)
     {
         gameActivity = ga;
         pieces = new HashMap<Integer, Piece_type>();
@@ -46,12 +46,19 @@ public class Player
                 this.pieces.put(i*7+j, Piece_type.get_empty_h());
             }
         }
+        if (all_expose)
+        {
+            for (int key : this.getPieces().keySet())
+            {
+                this.getPieces().get(key).expose();
+            }
+        }
     }
     public HashMap<Integer, Piece_type> getPieces()
     {
         return pieces;
     }
-    public void resetPieces(int loc)
+    public void resetPieces(int loc , boolean all_expose)
     {
         /*
             This function reset all pieces to empty.
@@ -61,9 +68,16 @@ public class Player
             if (pieces.get(i).getType() != Types.king && pieces.get(i).getType() != Types.trap)
                 pieces.put(i, Piece_type.get_empty_h());
         }
+        if (all_expose)
+        {
+            for (int key : this.getPieces().keySet())
+            {
+                this.getPieces().get(key).expose();
+            }
+        }
     }
 
-    public void spread_pieces(int loc)
+    public void spread_pieces(int loc, boolean all_expose)
     {
         /*
            This function spreads 12 weapon pieces randomly.
@@ -78,7 +92,10 @@ public class Player
                     int x = (int) (Math.random() * (14));
                     if (pieces.get(loc + x).getType() == Types.empty)
                     {
-                        pieces.put(loc + x, Piece_type.get_rock_h());
+                        if (all_expose)
+                            pieces.put(loc + x, Piece_type.get_rock());
+                        else
+                            pieces.put(loc + x, Piece_type.get_rock_h());
                         foundPlace = true;
                     }
                 }
@@ -92,7 +109,10 @@ public class Player
                         int x = (int) (Math.random() * (14));
                         if (pieces.get(loc + x).getType() == Types.empty)
                         {
-                            pieces.put(loc + x, Piece_type.get_paper_h());
+                            if (all_expose)
+                                pieces.put(loc + x, Piece_type.get_paper());
+                            else
+                                pieces.put(loc + x, Piece_type.get_paper_h());
                             foundPlace = true;
                         }
                     }
@@ -104,7 +124,10 @@ public class Player
                         int x = (int) (Math.random() * (14));
                         if (pieces.get(loc + x).getType() == Types.empty)
                         {
-                            pieces.put(loc + x, Piece_type.get_scissors_h());
+                            if (all_expose)
+                                pieces.put(loc + x, Piece_type.get_scissors());
+                            else
+                                pieces.put(loc + x, Piece_type.get_scissors_h());
                             foundPlace = true;
                         }
                     }

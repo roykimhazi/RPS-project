@@ -34,7 +34,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     TextView tvbombsleft_d, tv_score_d;
     Button homebtn_lose, homebtn_win, btn_flag;
     ImageButton re_scissors, re_rock, re_paper;
-    boolean second_move = false, is_first = true, is_sec = true, first_move;
+    boolean second_move = false, is_first = true, is_sec = true, first_move, all_expose;
     TextView tv_text, tv_type_chose;
     String userName;
     Player red_player, blue_player;
@@ -48,6 +48,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+        Intent intent = getIntent();
+        if (Integer.valueOf(intent.getExtras().getString("is_exposed").toString()) == 1)
+            all_expose = true;
+        else
+            all_expose = false;
+        System.out.println(all_expose);
         //column = Integer.valueOf(getIntent().getExtras().getString("column"));
         //row = Integer.valueOf(getIntent().getExtras().getString("row"));
         all_pieces = new HashMap<Integer,Piece_type>();
@@ -57,12 +63,11 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         first_move = true;
         row = 6;
         column = 7;
-        red_player = new Player(0, this);
-        blue_player = new Player(4, this);
+        blue_player = new Player(4, this, all_expose);
         linearLayoutBoard = (LinearLayout) findViewById(R.id.board);
         board = new Board(this, linearLayoutBoard, column, row);
         //bh = new BoardHandler(column, row);
-        computer = new Computer(0, board, this);
+        computer = new Computer(0, board, this, all_expose);
         //System.out.println(bh.toString());
         //btn_flag.setOnClickListener(this);
         tv_text = (TextView)findViewById(R.id.tvtext);
@@ -93,8 +98,8 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         if(v.getId() == 1)
         {
             // Spread pieces again randomly.
-            blue_player.resetPieces(column * 4);
-            blue_player.spread_pieces(column * 4);
+            blue_player.resetPieces(column * 4, all_expose);
+            blue_player.spread_pieces(column * 4, all_expose);
             board.showPieces(column * 4, blue_player);
         }
         else
@@ -135,7 +140,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 int loc = pair.first * column + pair.second;
                 if (loc > 27)
                 {
-                    blue_player.getPieces().put(loc, Piece_type.get_king_h());
+                    if (all_expose)
+                        blue_player.getPieces().put(loc, Piece_type.get_king());
+                    else
+                        blue_player.getPieces().put(loc, Piece_type.get_king_h());
                     // blue_player.getPieces().get(loc).hide();
                     ((Button) v).setText("⛿");
                     is_first = false;
@@ -152,11 +160,14 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     Pair<Integer, Integer> pair = getButtonPos(board, (Button) v);
                     int loc = pair.first * column + pair.second;
                     if (loc > 27 &&  ((Button) v).getText().toString().equals("")) {
-                        blue_player.getPieces().put(loc, Piece_type.get_trap_h());
+                        if (all_expose)
+                            blue_player.getPieces().put(loc, Piece_type.get_trap());
+                        else
+                            blue_player.getPieces().put(loc, Piece_type.get_trap_h());
                         //blue_player.getPieces().get(loc).hide();
                         ((Button) v).setText("T");
                         is_sec = false;
-                        blue_player.spread_pieces(column * 4); // spread player pieces randomly.
+                        blue_player.spread_pieces(column * 4, all_expose); // spread player pieces randomly.
                         board.showPieces(column * 4, blue_player);
                         two_buttons = board.addTwoButtons(); // add two buttons to layout.
                     }
