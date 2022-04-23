@@ -165,26 +165,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 else
                 {
-
-//                    if(v == re_scissors)
-//                    {
-//                        int loc = first_click_pair.first * column + first_click_pair.second;
-//                        chosen = Types.scissors;
-//                        update_player_after_tie(loc, loc);
-//                    }
-//                    if(v == re_rock)
-//                    {
-//                        int loc = first_click_pair.first * column + first_click_pair.second;
-//                        chosen = Types.rock;
-//                        update_player_after_tie(loc, loc);
-//                    }
-//                    if(v == re_paper)
-//                    {
-//                        int loc = first_click_pair.first * column + first_click_pair.second;
-//                        chosen = Types.paper;
-//                        update_player_after_tie(loc, loc);
-//                        //d_tie.dismiss();
-             //       }
                     if (v == homebtn_lose)
                     {
                         Intent intent = new Intent(this, MainActivity.class);

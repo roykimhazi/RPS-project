@@ -147,7 +147,7 @@ public class MCTS_Node
         // Place chosen move on board.
         computer.makeMoveMCTS(chosenMoveLocation, turn);
 
-        double score = Simulation(true, 20);
+        double score = Simulation(true, 40);
         totalScore += score;
         return score;
     }
@@ -164,7 +164,6 @@ public class MCTS_Node
         if (countDown > 0)
         {
             move_and_rate = computer.getBestMove(turn);
-            moveLocation = move_and_rate.first;
             rate = move_and_rate.second;
             if (rate == 10000000 || rate == -10000000)
             {
@@ -174,7 +173,7 @@ public class MCTS_Node
             }
             else
             {
-                computer.makeMoveMCTS(moveLocation, turn);
+                computer.makeMoveMCTS(move_and_rate.first, turn);
             }
             for (int key : player.getPieces().keySet())
             {

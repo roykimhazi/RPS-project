@@ -341,8 +341,8 @@ public class Simulation
     public double HeuristicFunction()
     {
         /*
-            This function rate the board based on both players data.
-            It determinants the rate according to some strategies.
+            This function rate t board based on both players data.
+            It determinants the rahete according to some strategies.
             The first, if flag has been eaten then return max score.
             The second, is the amount of pieces for each side, if the piece is hidden the value of the piece is bigger.
             The third, for PC checks pieces distance from the guess of enemy flag.

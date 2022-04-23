@@ -383,14 +383,14 @@ public class Computer extends Player {
             This function makes a move by using MCTS and Heuristic function.
          */
         Pair<Integer,Integer> chosen_move;
-//        chosen_move = MCTS_Node.StartMCTS(gameActivity.blue_player, this);
-//        whichMove(all_pieces, chosen_move.first, chosen_move.second, board, tv_text );
-        List<Pair<Integer,Integer>> moves_list = getPossibleMoves(all_pieces, turn); // This list contains all possible moves.
-        if (!moves_list.isEmpty())
-        {
-            int i = chooseBestMove(moves_list, turn);
-            whichMove(all_pieces, moves_list.get(i).first, moves_list.get(i).second,board,tv_text );
-        }
+        chosen_move = MCTS_Node.StartMCTS(gameActivity.blue_player, this);
+        whichMove(all_pieces, chosen_move.first, chosen_move.second, board, tv_text );
+//        List<Pair<Integer,Integer>> moves_list = getPossibleMoves(all_pieces, turn); // This list contains all possible moves.
+//        if (!moves_list.isEmpty())
+//        {
+//            int i = chooseBestMove(moves_list, turn);
+//            whichMove(all_pieces, moves_list.get(i).first, moves_list.get(i).second,board,tv_text );
+//        }
         //whichMove(all_pieces, first_loc, rand_loc, board);
     }
 
