@@ -3,18 +3,16 @@ package com.example.rps;
 import java.util.HashMap;
 import java.util.Random;
 
+/**
+ * This class Runs a simulation of a game without hurts the source game.
+ * It contains a data of both players(player and PC) and heuristic function.
+ */
 public class Simulation
 {
-    /*
-        This class Runs a simulation of a game without hurts the source game.
-        It contains a data of both players(player and PC) and heuristic function.
-     */
     private Player blue_player;
     private Computer computer;
     private HashMap <Integer, Piece_type> all_pieces;
 
-    private int depth;
-    private double rate;
     private boolean turn; // If turn = true - player turn. else PC turn.
     int near_arr[] = {7, 1, -7, -1};
     int diagonal_arr[] = {-8, -6, 8, 6};
@@ -28,25 +26,25 @@ public class Simulation
         {
             this.blue_player = new Player(blue_player);
             this.computer = new Computer(computer, blue_player);
-            this.all_pieces = all_pieces;
-            this.turn = turn;
 
         }
         else
         {
-            this.blue_player = blue_player;//new Player(blue_player);//
+            this.blue_player = blue_player;//new Player(blue_player);
             this.computer = computer;//new Computer(computer);//
-            this.all_pieces = all_pieces;
-            this.turn = turn;
         }
+        this.all_pieces = all_pieces;
+        this.turn = turn;
     }
 
+    /**
+     * This function receives 2 locations.
+     * It makes the move based on the data we have and update the copy data
+     * @param first_loc
+     * @param move_loc
+     */
     public void doMove(int first_loc, int move_loc)
     {
-        /*
-            This function receives 2 locations.
-            It makes the move based on the data we have and update the copy data
-         */
         if (!turn) // If PC turn
         {
             if (this.all_pieces.get(move_loc).getType() == Types.empty)
@@ -103,15 +101,13 @@ public class Simulation
                     {
                         clearAfterFight(move_loc, first_loc, false);
                     }
-
-
                 }
                 else
                     chooseNewPieces(first_loc, move_loc);
 
             }
         }
-        else // להוסיף כזה כשתור השחקן.
+        else
         {
             if (this.all_pieces.get(move_loc).getType() == Types.empty)
             {
@@ -120,7 +116,6 @@ public class Simulation
                 all_pieces.put(first_loc,Piece_type.get_empty());
                 all_pieces.put(move_loc, p_type);
                 computer.updateMove(first_loc, move_loc);
-
             }
             else
             {
@@ -172,16 +167,17 @@ public class Simulation
                 }
                 else
                     chooseNewPieces(first_loc, move_loc);
-
             }
         }
     }
 
+    /**
+     * This function receives two moves and in case there was a tie, choose new weapons to both sides.
+     * @param first_loc
+     * @param move_loc
+     */
     public void chooseNewPieces(int first_loc, int move_loc)
     {
-        /*
-            This function receives two moves and in case there was a tie, choose new weapons to both sides.
-         */
         Random rand = new Random();
         int chosen = -1;
         boolean flag = false;
@@ -262,6 +258,14 @@ public class Simulation
         }
     }
 
+    /**
+     * This function updates both pieces that participated at the fight and had a tie.
+     * @param first_loc
+     * @param move_loc
+     * @param p_type
+     * @param is_player
+     * @param start_fight
+     */
     private void updateAfterTie(int first_loc, int move_loc, Piece_type p_type , boolean is_player /* True if player piece, false if PC piece */, boolean start_fight /* If true, start fight again with new pieces */)
     {
         if (turn) // If player move.
@@ -282,12 +286,15 @@ public class Simulation
             doMove(first_loc, move_loc);
     }
 
+    /**
+     * This function receives two locations of pieces and a winner.
+     * It updates the copy data according to the winne.
+     * @param move_loc
+     * @param first_loc
+     * @param winner
+     */
     private void clearAfterFight(int move_loc, int first_loc, boolean winner) // True if player won, else false.
     {
-        /*
-            This function receives two locations of pieces and a winner.
-            It updates the copy data according to the winne.
-         */
         if (turn) // If player turn.
         {
             if (winner) // If player won PC = true, else false. // Player attacks and win.
@@ -305,7 +312,6 @@ public class Simulation
             else // Player attacks and lose.
             {
                 //computer.getPieces().get(move_loc).expose();
-                //System.out.println(" " + move_loc + computer.getPieces().get(move_loc).getType());
                 computer.reportAGuess(first_loc, blue_player.getPieces().remove(first_loc));
                 computer.removeFromGuess(first_loc);
                 all_pieces.put(first_loc,Piece_type.get_empty());
@@ -338,18 +344,19 @@ public class Simulation
         return HeuristicFunction();
     }
 
+    /**
+     * This function rate t board based on both players data.
+     * It determinants the rahete according to some strategies.
+     * The first, if flag has been eaten then return max score.
+     * The second, is the amount of pieces for each side, if the piece is hidden the value of the piece is bigger.
+     * The third, for PC checks pieces distance from the guess of enemy flag.
+     * The fourth, checks how strong is the defence on the flag.
+     * The fifth, checks for enemy pieces that threat the flag.
+     * The sixth, checks domination on the board.
+     * @return total rate.
+     */
     public double HeuristicFunction()
     {
-        /*
-            This function rate t board based on both players data.
-            It determinants the rahete according to some strategies.
-            The first, if flag has been eaten then return max score.
-            The second, is the amount of pieces for each side, if the piece is hidden the value of the piece is bigger.
-            The third, for PC checks pieces distance from the guess of enemy flag.
-            The fourth, checks how strong is the defence on the flag.
-            The fifth, checks for enemy pieces that threat the flag.
-            The sixth, checks domination on the board.
-         */
         int winner = is_over(); // First strategy.
         if (winner != 0)
         {
@@ -406,12 +413,14 @@ public class Simulation
         return score;
     }
 
+    /**
+     * This function checks for enemies pieces near flag.
+     * And returns score.
+     * @param king_loc
+     * @return
+     */
     private double kingHostiles(int king_loc)
     {
-        /*
-            This function checks for enemies pieces near flag.
-            And returns score.
-         */
         double value = 0;
         if (turn) // Player turn
         {
@@ -458,12 +467,12 @@ public class Simulation
         return value;
     }
 
+    /**
+     * This function checks pieces distance from guess flag.
+     * @return return score based on distance.
+     */
     private double distanceFromKing()
     {
-        /*
-            This function checks pieces distance from guess flag.
-            Return score based on distance.
-         */
         int king_guess_loc = 0;
         for (int key : computer.guess.keySet())
         {
@@ -501,11 +510,12 @@ public class Simulation
         return 0;
     }
 
+    /**
+     * This function checks if the pieces spread on the board smartly, rate it and return.
+     * @return rate.
+     */
     private double domination()
     {
-        /*
-            This function checks if the pieces spread on the board smartly, rate it and return.
-         */
         double value = 0;
         Piece_type p_type;
         if (turn) // Player turn
@@ -561,11 +571,14 @@ public class Simulation
         return value;
     }
 
+    /**
+     * This function receives 2 weapons and return score of the fight.
+     * @param p_enemy_type
+     * @param p_your_type
+     * @return the score of the fight.
+     */
     private double winner(Piece_type p_enemy_type, Piece_type p_your_type)
     {
-        /*
-            This function receives 2 weapons and return score of the fight.
-         */
         switch (p_enemy_type.getType())
         {
             case rock:
@@ -610,11 +623,14 @@ public class Simulation
         }
         return 0;
     }
+
+    /**
+     * This function receives flag location and return score based on his protection level.
+     * @param king_loc
+     * @return score.
+     */
     private double kingSafe(int king_loc)
     {
-        /*
-            This function receives flag location and return score based on his protection level.
-         */
         double value = 0;
         int c_scissors = 0, c_rock = 0, c_paper = 0;
         if (turn) // Player turn
@@ -640,7 +656,6 @@ public class Simulation
                         }
                 }
             }
-
             for (int i : diagonal_arr) {
                 if (blue_player.getPieces().get(king_loc + i) != null) {
                     if (blue_player.getPieces().get(king_loc + i).getType() == Types.trap)
@@ -719,11 +734,12 @@ public class Simulation
         return value;
     }
 
+    /**
+     * This function checks if the game has a winner.
+     * @return returns 1 if player won, -1 if PC won and 0 if nobody won.
+     */
     private int is_over()
     {
-        /*
-            This function returns 1 if player won, -1 if PC won and 0 if nobody won.
-         */
         int value = 1;
         if (turn) // Player turn.
         {

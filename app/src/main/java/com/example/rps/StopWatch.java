@@ -6,6 +6,9 @@ import androidx.annotation.RequiresApi;
 import java.time.Duration;
 import java.time.Instant;
 
+/**
+ * This class represent a timer for MCTS algorithm.
+ */
 public class StopWatch
 {
     Instant startTime, endTime;

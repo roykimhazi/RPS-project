@@ -1,14 +1,13 @@
 package com.example.rps;
 
-import java.util.Dictionary;
 import java.util.HashMap;
 
+/**
+ * This class represent the Player side.
+ * It contains data of the pieces.
+ */
 public class Player
 {
-    /*
-        This class represent the Player side.
-         It contains data of the pieces.
-    */
     private HashMap<Integer, Piece_type> pieces;
     protected GameActivity gameActivity;
 
@@ -58,11 +57,14 @@ public class Player
     {
         return pieces;
     }
+
+    /**
+     * This function reset all pieces to empty.
+     * @param loc
+     * @param all_expose
+     */
     public void resetPieces(int loc , boolean all_expose)
     {
-        /*
-            This function reset all pieces to empty.
-         */
         for (int i = loc; i < 14 + loc; i++)
         {
             if (pieces.get(i).getType() != Types.king && pieces.get(i).getType() != Types.trap)
@@ -77,11 +79,13 @@ public class Player
         }
     }
 
+    /**
+     * This function spreads 12 weapon pieces randomly.
+     * @param loc
+     * @param all_expose
+     */
     public void spread_pieces(int loc, boolean all_expose)
     {
-        /*
-           This function spreads 12 weapon pieces randomly.
-        */
         for (int i = 0; i < 12; i++)
         {
             boolean foundPlace = false;

@@ -2,22 +2,20 @@ package com.example.rps;
 
 import android.os.Build;
 import android.util.Pair;
-import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class Computer extends Player {
-    /*
-        This class represent the PC side, it extends from Player.
-        It contains data of the pieces, guesses of the player pieces etc.
-     */
+/**
+ * This class represents the PC side, it extends from Player.
+ * It contains data of the pieces, guesses of the player pieces etc.
+ */
+public class Computer extends Player
+{
     private int count_scissors;
     private int count_rock;
     private int count_paper;
@@ -54,7 +52,6 @@ public class Computer extends Player {
                     getPieces().put(loc + x, Piece_type.get_king());
                 else
                     getPieces().put(loc + x, Piece_type.get_king_h());
-                //getPieces().get(loc + x).hide();
                 foundPlace = true;
             }
         }
@@ -68,7 +65,6 @@ public class Computer extends Player {
                     getPieces().put(loc + x, Piece_type.get_trap());
                 else
                     getPieces().put(loc + x, Piece_type.get_trap_h());
-                //getPieces().get(loc + x).hide();
                 foundPlace = true;
             }
         }
@@ -83,7 +79,6 @@ public class Computer extends Player {
                 for(int j = 0; j < 7; j++)
                 {
                     guess.put(i*7+j + 28, Piece_type.get_empty_h());
-                    //guess.get(i*7+j + 28).hide();
                 }
             }
             initGuess();
@@ -102,11 +97,14 @@ public class Computer extends Player {
     {
         return count_paper;
     }
+
+    /**
+     * This function is initializing the PC pieces on the board.
+     * @param board
+     * @param all_expose
+     */
     private void initComputerPieces(Board board, boolean all_expose)
     {
-        /*
-            This function is initializing the PC pieces on the board.
-         */
         for (int i = 0; i < 2; i++)
         {
             for (int j = 0; j < 7; j++)
@@ -119,16 +117,15 @@ public class Computer extends Player {
         }
     }
 
+    /**
+     * This function is initializing all player pieces(by guessing).
+     */
     private void initGuess()
     {
-        /*
-            This function is initializing all player pieces(by guessing).
-         */
         boolean foundPlace = false;
 
         int x = (int) (Math.random() * (7) + 35);
         guess.put(x, Piece_type.get_king_h());
-
         while (!foundPlace)
         {
             x = (int) (Math.random() * (14)+ 28);
@@ -181,11 +178,12 @@ public class Computer extends Player {
         }
     }
 
+    /**
+     * This function update all Guesses.
+     * @param blue_pieces
+     */
     public void updateGuesses(HashMap<Integer, Piece_type> blue_pieces)
     {
-        /*
-            This function update all Guesses.
-         */
         for (int loc : blue_pieces.keySet())
         {
             if(blue_pieces.get(loc).is_exposed() == true)
@@ -194,21 +192,25 @@ public class Computer extends Player {
     }
 
 
+    /**
+     * This function receives a location and piece type of checked guess(a guess that 100% expose).
+     * If the guess at location is this type expose it, otherwise replace to type.
+     * @param loc
+     * @param p_type
+     */
     public void reportAGuess(int loc, Piece_type p_type)
     {
-        /*
-            This function receives a location and piece type of checked guess(a guess that 100% expose).
-            If the guess at location is this type expose it, otherwise replace to type.
-         */
         if (guess.get(loc).getType() != p_type.getType())
             replacePiecesSpecific(loc, p_type);
         guess.get(loc).expose();
     }
+
+    /**
+     * This function receives a location of a piece and removes it from the guesses HashMap.
+     * @param loc
+     */
     public void removeFromGuess(int loc)
     {
-        /*
-            This function receives a location of a piece and removes it from the guesses HashMap.
-         */
         Types type;
         if (guess.get(loc).getType() == Types.trap || guess.get(loc).getType() == Types.king)
         {
@@ -226,11 +228,13 @@ public class Computer extends Player {
             count_paper -= 1;
     }
 
+    /**
+     * This function receives 2 locations and change guess location if moved.
+     * @param first_loc
+     * @param moved_loc
+     */
     public void updateMove(int first_loc, int moved_loc)
     {
-        /*
-            This function receives 2 locations and change guess location if moved.
-         */
         if(guess.get(first_loc).getType() == Types.trap || guess.get(first_loc).getType() == Types.king) // If guess is trap or king, replace their guess because they can't move.
         {
             replacePieces(first_loc);
@@ -238,11 +242,12 @@ public class Computer extends Player {
         guess.put(moved_loc, guess.remove(first_loc));
     }
 
+    /**
+     * This function receives a location of guess and replace king/trap guess with weapon piece.
+     * @param loc
+     */
     public void replacePieces(int loc)
     {
-        /*
-            This function receives a location of guess and replace king/trap guess with weapon piece.
-         */
         for (int replace_loc : guess.keySet())
         {
             if(replace_loc != loc && guess.get(replace_loc).getType() != Types.trap && guess.get(replace_loc).getType() != Types.king && guess.get(replace_loc).is_exposed() == false)
@@ -254,22 +259,21 @@ public class Computer extends Player {
             }
         }
     }
+
+    /**
+     * This function receives a location and type, and replace piece in guess.
+     * @param loc
+     * @param p_type
+     */
     public void replacePiecesSpecific(int loc, Piece_type p_type)
     {
-        /*
-            This function receives a location and type, and replace piece in guess.
-         */
         switch (p_type.getType())
         {
-            case king:
-            {
-                // Declare computer win
-            }
             case trap:
             {
                 for (int replace_loc : guess.keySet())
                 {
-                    if(replace_loc != loc && guess.get(replace_loc).getType() == Types.trap && guess.get(replace_loc).is_exposed() == false)// try later this : guess.get(replace_loc).Piece_type.get_trap()
+                    if(replace_loc != loc && guess.get(replace_loc).getType() == Types.trap && guess.get(replace_loc).is_exposed() == false)
                     {
                         guess.put(replace_loc, guess.get(loc));
                         guess.put(loc, p_type);
@@ -320,6 +324,11 @@ public class Computer extends Player {
         }
     }
 
+    /**
+     * This function checks all moves and adds all of the valid moves to a list.
+     * @param turn
+     * @return List of valid moves.
+     */
     public List<Pair<Integer,Integer>> getPossibleMoves(boolean turn)
     {
         List<Pair<Integer,Integer>> moves_list = new ArrayList<Pair<Integer,Integer>>(); // This list contains all possible moves.
@@ -373,23 +382,33 @@ public class Computer extends Player {
         }
         return moves_list;
     }
+
+    /**
+     * This function makes a move by using MCTS and Heuristic function.
+     * @param turn
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void makeMove(boolean turn) // True if player turn, else false.
     {
-        /*
-            This function makes a move by using MCTS and Heuristic function.
-         */
         Pair<Integer,Integer> chosen_move;
         chosen_move = MCTS_Node.StartMCTS(gameActivity.blue_player, this);
         whichMove(chosen_move.first, chosen_move.second);
-//        List<Pair<Integer,Integer>> moves_list = getPossibleMoves(turn); // This list contains all possible moves.
-//        if (!moves_list.isEmpty())
-//        {
-//            int i = chooseBestMove(moves_list, turn);
-//            whichMove(moves_list.get(i).first, moves_list.get(i).second);
-//        }
+        /*
+        Heuristic function.
+        List<Pair<Integer,Integer>> moves_list = getPossibleMoves(turn); // This list contains all possible moves.
+        if (!moves_list.isEmpty())
+        {
+            int i = chooseBestMove(moves_list);
+            whichMove(moves_list.get(i).first, moves_list.get(i).second);
+        }
+         */
     }
 
+    /**
+     * This function call 2 functions and create a sorted moves list.
+     * @param turn
+     * @return sorted moves list.
+     */
     public List<Pair<Integer,Integer>> get_all_moves_sorted(boolean turn)
     {
         List<Pair<Integer,Integer>> moves = getPossibleMoves(turn); // This list contains all possible moves.
@@ -397,7 +416,11 @@ public class Computer extends Player {
         return moves;
     }
 
-
+    /**
+     * This function find the best move and his rate.
+     * @param turn
+     * @return the best move and his rate.
+     */
     public Pair<Pair<Integer,Integer>,Double> getBestMove(boolean turn)
     {
         double best_rate;
@@ -412,7 +435,12 @@ public class Computer extends Player {
 
     }
 
-
+    /**
+     * This function sorts the list of moves based on heuristic function.
+     * @param moves_list
+     * @param turn
+     * @return the rate of the best move.
+     */
     public double sort_move_list(List<Pair<Integer,Integer>> moves_list, boolean turn)
     {
 
@@ -446,24 +474,23 @@ public class Computer extends Player {
                 }
             }
         }
-        //for (int i = 0; i < moves_list.size() - 1; i++)
-            // System.out.println("Move number - " + i + " at location : " + moves_list.get(i).first + " to: " + moves_list.get(i).second + " rate = " + rates[i]);
         return rates[0];
     }
 
-    private int chooseBestMove(List<Pair<Integer,Integer>> moves_list, boolean turn)
+    /**
+     * This function receives list of moves and turn(True if player turn, false if PC turn).
+     * This function returns the best move based on the biggest difference of all moves.
+     * @param moves_list
+     * @return the index of the best move.
+     */
+    private int chooseBestMove(List<Pair<Integer,Integer>> moves_list)
     {
-        /*
-            This function receives list of moves and turn(True if player turn, false if PC turn).
-            This function returns the best move based on the biggest difference of all moves.
-         */
         Simulation new_simulation;
         Simulation simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(), true, false);
         double rate_of_current_pos = simulation.getRate();
         double best_move_rate = -999999999;
         int index_of_best_move = 0;
         double rate_of_moved_loc;
-        // System.out.println("________________________");
         for (int i = 0; i < moves_list.size(); i++)
         {
             new_simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(),false, true);
@@ -474,23 +501,24 @@ public class Computer extends Player {
                 best_move_rate = rate_of_moved_loc - rate_of_current_pos;
                 index_of_best_move = i;
             }
-            // System.out.println("Move number - " + i + " at location : " + moves_list.get(i).first + " to: " + moves_list.get(i).second + " rate = " + rate_of_moved_loc);
         }
         return index_of_best_move;
     }
 
+    /**
+     * This function make a move or start a fight.
+     * @param first_loc
+     * @param move_loc
+     */
     public void whichMove( int first_loc, int move_loc)
     {
-        /*
-            This function make a move or start a fight.
-         */
         if (gameActivity.all_pieces.get(move_loc).getType() == Types.empty)
         {
             Piece_type p_type = this.getPieces().remove(first_loc);
             this.getPieces().put(move_loc, p_type);
             gameActivity.all_pieces.put(first_loc, Piece_type.get_empty());
             gameActivity.all_pieces.put(move_loc, p_type);
-            gameActivity.board.updateButton(move_loc / 7, move_loc % 7, p_type.getType(), false, this.getPieces().get(move_loc).is_exposed());//update on board
+            gameActivity.board.updateButton(move_loc / 7, move_loc % 7, p_type.getType(), false, this.getPieces().get(move_loc).is_exposed()); // Update on board
             gameActivity.board.clearButton(first_loc / 7, first_loc % 7);
         }
         else
@@ -508,7 +536,6 @@ public class Computer extends Player {
                     if (computer_piece.getType() == Types.scissors)
                     {
                         clearAfterFight(move_loc, first_loc, true);
-                        // להפוך את הנשק לגלוי
                     }
                     if(computer_piece.getType() == Types.paper)
                     {
@@ -520,7 +547,6 @@ public class Computer extends Player {
                     if (computer_piece.getType() == Types.paper)
                     {
                         clearAfterFight(move_loc, first_loc, true);
-                        // להפוך את הנשק לגלוי
                     }
                     if(computer_piece.getType() == Types.rock)
                     {
@@ -532,7 +558,6 @@ public class Computer extends Player {
                     if (computer_piece.getType() == Types.rock)
                     {
                         clearAfterFight(move_loc, first_loc, true);
-                        // להפוך את הנשק לגלוי
                     }
                     if(computer_piece.getType() == Types.scissors)
                     {
@@ -544,36 +569,28 @@ public class Computer extends Player {
                     clearAfterFight(move_loc, first_loc, false);
                     gameActivity.create_lose_dialog();
                 }
-//                if(computer_piece.getType() == Types.trap)
-//                {
-//                    clearAfterFight(move_loc, first_loc, true, tv_text);
-//                }
-
             }
             else
-            {
-                // לעשות את הבחירה מחדש של המחשב
                 gameActivity.create_tie_dialog(computer_piece, move_loc, first_loc);
-                //whichMove(all_pieces, first_loc, move_loc, board, tv_text);
-                //startFight(player_loc, computer_loc);
-                // לזמן קרב שוב עם החדשים
-            }
+
         }
     }
 
+    /**
+     * This function updates data after moving a piece.
+     * @param player_loc
+     * @param computer_loc
+     * @param winner
+     */
     public void clearAfterFight(int player_loc, int computer_loc, boolean winner) // true if player won, false if computer won.
     {
-        /*
-            This function updates data after moving a piece.
-         */
         if (gameActivity.blue_player.getPieces().get(player_loc).getType() == Types.trap) {
             gameActivity.tv_text.setTextColor(0xff0000ff);
             gameActivity.tv_text.setText("Red player fell into blue " + Types.trap.toString());
-            //blue_player.getPieces().remove(player_loc);
             this.getPieces().remove(computer_loc);
             reportAGuess(player_loc, gameActivity.blue_player.getPieces().get(player_loc));
             gameActivity.all_pieces.put(computer_loc, Piece_type.get_empty());
-            gameActivity.board.clearButton(computer_loc / 7, computer_loc % 7);// remove moved piece from last location
+            gameActivity.board.clearButton(computer_loc / 7, computer_loc % 7); // Remove moved piece from last location
         } else {
             if (winner) // If player won fight.
             {
@@ -584,11 +601,10 @@ public class Computer extends Player {
                 gameActivity.tv_text.setText("Blue won with " + p_type.getType().toString());
 
                 gameActivity.all_pieces.put(computer_loc, Piece_type.get_empty());
-                //blue_player.getPieces().remove(player_loc);
                 this.getPieces().remove(computer_loc);
                 reportAGuess(player_loc, p_type);
                 gameActivity.board.updateButton(player_loc / 7, player_loc % 7, p_type.getType(), true, true);
-                gameActivity.board.clearButton(computer_loc / 7, computer_loc % 7);// remove moved piece from last location
+                gameActivity.board.clearButton(computer_loc / 7, computer_loc % 7); // Remove moved piece from last location
             }
             else // If PC won fight.
             {
@@ -597,32 +613,36 @@ public class Computer extends Player {
                 gameActivity.tv_text.setText("Red won with " + p_type.getType().toString());
                 this.getPieces().put(player_loc, p_type);
                 this.getPieces().get(player_loc).expose();
-                // System.out.println("computer 594: " + player_loc + this.getPieces().get(player_loc).getType());
                 gameActivity.all_pieces.put(computer_loc, Piece_type.get_empty());
                 gameActivity.all_pieces.put(player_loc, p_type);
                 gameActivity.all_pieces.get(player_loc).expose();
                 reportAGuess(player_loc, gameActivity.blue_player.getPieces().remove(player_loc));
                 removeFromGuess(player_loc);
-                gameActivity.board.updateButton(player_loc / 7, player_loc % 7, p_type.getType(), false, true);//update on board
-                gameActivity.board.clearButton(computer_loc / 7, computer_loc % 7);// remove moved piece from last location
+                gameActivity.board.updateButton(player_loc / 7, player_loc % 7, p_type.getType(), false, true); // Update on board
+                gameActivity.board.clearButton(computer_loc / 7, computer_loc % 7); // Remove moved piece from last location
                 if (gameActivity.blue_player.getPieces().size() == 2)
                     gameActivity.create_lose_dialog();
             }
         }
     }
 
-
+    /**
+     * This function makes a move on data copy from MCTS class.
+     * @param move
+     * @param turn
+     */
     public void makeMoveMCTS(Pair<Integer,Integer> move, boolean turn)
     {
         Simulation simulation = new Simulation(gameActivity.blue_player, this, gameActivity.all_pieces, turn, false);
         simulation.doMove(move.first,move.second);
     }
 
+    /**
+     * This function picks a new weapon to piece if tie occurred.
+     * @param computer_loc
+     */
     public void chooseNewPiece(int computer_loc)
     {
-        /*
-            This function picks a new weapon to piece if tie occurred.
-         */
         boolean flag = false;
         Random rand = new Random();
         int chosen = -1;
@@ -680,20 +700,25 @@ public class Computer extends Player {
         }
     }
 
+    /**
+     * This function updates the PC piece after a tie.
+     * @param computer_loc
+     * @param p_type
+     */
     private void updateAfterTie(int computer_loc, Piece_type p_type)
     {
-        /*
-            This function updates the PC piece after a tie.
-         */
         this.getPieces().put(computer_loc, p_type);
         gameActivity.all_pieces.put(computer_loc, p_type);
         gameActivity.board.updateButton(computer_loc / 7, computer_loc % 7, p_type.getType(), false, true);//update on board
     }
-    public void updateGuessAfterTie(int player_loc, Piece_type p_type, Types chosen)
+
+    /**
+     * This function updates guess after tie.
+     * @param p_type
+     * @param chosen
+     */
+    public void updateGuessAfterTie(Piece_type p_type, Types chosen)
     {
-        /*
-            This function updates guess after tie.
-         */
         switch (p_type.getType())
         {
             case paper:

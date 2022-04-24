@@ -20,8 +20,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.Random;
 
@@ -367,7 +365,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         blue_player.getPieces().put(player_loc, Piece_type.get_piece(chosen));
         all_pieces.put(player_loc, Piece_type.get_piece(chosen));
         board.updateButton(player_loc / 7, player_loc % 7, chosen, true, true);//update on board
-        computer.updateGuessAfterTie(player_loc, p_type, chosen);
+        computer.updateGuessAfterTie(p_type, chosen);
         d_tie.dismiss();
         computer.chooseNewPiece(computer_loc);
         if(turn == 1)

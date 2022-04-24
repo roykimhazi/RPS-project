@@ -1,12 +1,12 @@
 package com.example.rps;
 
+/**
+ * This class is the data struct I used all over the project.
+ * It contains a type of piece and if the piece is expose or hidden.
+ * All functions returns pieces.
+ */
 public class Piece_type
 {
-    /*
-        This class is the data struct I used all over the project.
-        It contains a type of piece and if the piece is expose or hidden.
-        All functions returns pieces.
-     */
     private Types type;
     private boolean is_exposed;
 
@@ -23,11 +23,6 @@ public class Piece_type
     public Types getType()
     {
         return type;
-    }
-
-    public void setType(Types type1)
-    {
-        type = type1;
     }
 
     public boolean is_exposed()

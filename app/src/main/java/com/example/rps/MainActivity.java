@@ -8,25 +8,19 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
-import org.json.JSONObject;
-
+/**
+ * This class represent the home page of the application.
+ * It contains buttons and music.
+ */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener
 {
-    /*
-        This class represent the home page of the application.
-        It contains buttons and music.
-     */
     EditText playerName;
     Button btnStart, btnSound, info_dialog, btn_settings, no_button, yes_button, exit_button;
     MediaPlayer backsound;
@@ -68,13 +62,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    /**
+     *  This function checks which button was pressed and operate accordingly.
+     *  This function receives the view that pressed.
+     * @param v
+     */
     @Override
     public void onClick(View v)
     {
-        /*
-            This function checks which button was pressed and operate accordingly.
-            This function receives the view that pressed.
-         */
         if (v == btn_settings)
         {
             create_settings_dialog();
@@ -118,11 +113,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * This function creates the info dialog.
+     */
     private void create_info_dialog()
     {
-        /*
-            This function creates the info dialog.
-         */
         d_info = new Dialog(this);
         d_info.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d_info.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -140,10 +135,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         d_info.show();
     }
 
+    /**
+     * This function creates the settings dialog.
+     */
     private void create_settings_dialog()
-        /*
-            This function creates the settings dialog.
-         */
     {
         d_settings = new Dialog(this);
         d_settings.requestWindowFeature(Window.FEATURE_NO_TITLE);

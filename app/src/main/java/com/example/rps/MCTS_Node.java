@@ -4,12 +4,14 @@ import android.os.Build;
 import android.util.Pair;
 
 import java.util.ArrayList;
-import java.util.Dictionary;
 import java.util.List;
 
 
 import androidx.annotation.RequiresApi;
 
+/**
+ * This class represents a node of MCTS.
+ */
 public class MCTS_Node
 {
     private double totalScore; // the total value of all child nodes and rollouts it had.
@@ -33,7 +35,12 @@ public class MCTS_Node
         maxChild = -1; // No expansion happened yet.
     }
 
-    // Find the move that will most likely lead to the AI's win.
+    /**
+     * This function starts the MCTS algorithm.
+     * @param player
+     * @param computer
+     * @return the best move to do.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public static Pair<Integer,Integer> StartMCTS(Player player, Computer computer)
     {
@@ -57,12 +64,14 @@ public class MCTS_Node
         return moveLocation;
     }
 
-    // Finds the best node according to UCB1 results.
+    /**
+     * This function finds the best node according to UCB1 results.
+     * @return best node index.
+     */
     public int FindBestNode()
     {
         maxChild++;
         int bestNodeIndex = 0;
-        // Find node that has the best UCB1 score
         if (maxChild > 0)
         {
             double bestNodeScore = childNodes.get(0).UCB1(numberOfVisits);
@@ -80,7 +89,10 @@ public class MCTS_Node
         return bestNodeIndex;
     }
 
-    // Runs MCTS search until it reaches end of game.
+    /**
+     * This function runs MCTS search until it reaches end of game.
+     * @return score.
+     */
     public double RunMCTS()
     {
         double score = 0;
@@ -100,6 +112,9 @@ public class MCTS_Node
         return score;
     }
 
+    /**
+     * This function creates new nodes as children nodes.
+     */
     private void GetChildren()
     {
 
@@ -111,35 +126,39 @@ public class MCTS_Node
         maxChild = 0;
     }
 
-    /*
-        Returns the score of the UCB1 formule for current node.
-        Formula: Vi + 2 * sqrt((lnN) / ni)
-        Vi - average value (totalScore/numberOfVisits) of given node
-        N - overall visits from PARENT node (numberOfVisits of parent)
-        ni - numberOfVisits of current node
+    /**
+     * Formula: Vi + 2 * sqrt((lnN) / ni)
+     * Vi - average value (totalScore/numberOfVisits) of given node
+     * N - overall visits from PARENT node (numberOfVisits of parent)
+     * ni - numberOfVisits of current node
+     * @param N
+     * @return returns the score of the UCB1 formule for current node.
      */
-
     public double UCB1(int N)
     {
         double Vi = totalScore / numberOfVisits;
         return Vi + 2 * Math.sqrt((Math.log(N)) / numberOfVisits);
     }
 
-
-
-
-    // Starts simulation for given node.
+    /**
+     * Starts simulation for given node.
+     * @param chosenMoveLocation
+     * @return score.
+     */
     private double StartSimulation(Pair<Integer,Integer> chosenMoveLocation)
     {
-        // Place chosen move on board.
-        computer.makeMoveMCTS(chosenMoveLocation, turn);
-
+        computer.makeMoveMCTS(chosenMoveLocation, turn); // Play chosen move.
         double score = Simulation(true, 20);
         totalScore += score;
         return score;
     }
 
-    // Runs a simulation of the game;
+    /**
+     * Runs a simulation of the game.
+     * @param turn
+     * @param countDown
+     * @return score.
+     */
     private double Simulation(boolean turn, int countDown)
     {
         Pair<Pair<Integer,Integer>, Double> move_and_rate;
@@ -158,16 +177,7 @@ public class MCTS_Node
             {
                 computer.makeMoveMCTS(move_and_rate.first, turn);
             }
-            for (int key : player.getPieces().keySet())
-            {
-                //System.out.println("Player piece at loc: " + key );// player.getPieces().get(key));
-            }
-            for (int key : computer.getPieces().keySet())
-            {
-                //System.out.println("PC piece at loc: " + key ); //computer.getPieces().get(key));
-            }
             return Simulation(!turn, countDown - 1);
-
         }
         else
         {
@@ -176,6 +186,5 @@ public class MCTS_Node
             return rate;
         }
     }
-
 }
 
