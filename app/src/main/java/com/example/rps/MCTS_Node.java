@@ -42,7 +42,7 @@ public class MCTS_Node
         mainNode.GetChildren();
         stopWatch.start();
 
-        while(stopWatch.getElapsedTime().getNano() < 1000)
+        while(stopWatch.getElapsedTime().getNano() < 2000)
         {
             int bestNodeIndex = mainNode.FindBestNode();
             mainNode.totalScore += mainNode.childNodes.get(bestNodeIndex).RunMCTS();
@@ -134,7 +134,7 @@ public class MCTS_Node
         // Place chosen move on board.
         computer.makeMoveMCTS(chosenMoveLocation, turn);
 
-        double score = Simulation(true, 2);
+        double score = Simulation(true, 20);
         totalScore += score;
         return score;
     }
@@ -148,9 +148,9 @@ public class MCTS_Node
         {
             move_and_rate = computer.getBestMove(turn);
             rate = move_and_rate.second;
-            if (rate == 10000000 || rate == -10000000)
+            if (rate == 10000000 || rate == -10000000 || rate == -666.666)
             {
-                if ((turn && rate == 10000000) || (!turn && rate != 10000000))
+                if ((turn && rate == 10000000 || rate == -666.666) || (!turn && (rate != 10000000 || rate == -666.666)))
                     return -1;
                 return 1;
             }
@@ -160,18 +160,18 @@ public class MCTS_Node
             }
             for (int key : player.getPieces().keySet())
             {
-                System.out.println("Player piece at loc: " + key );// player.getPieces().get(key));
+                //System.out.println("Player piece at loc: " + key );// player.getPieces().get(key));
             }
             for (int key : computer.getPieces().keySet())
             {
-                System.out.println("PC piece at loc: " + key ); //computer.getPieces().get(key));
+                //System.out.println("PC piece at loc: " + key ); //computer.getPieces().get(key));
             }
             return Simulation(!turn, countDown - 1);
 
         }
         else
         {
-            Simulation s = new Simulation(player,computer,player.gameActivity.all_pieces,0,turn,false,0,0);
+            Simulation s = new Simulation(player, computer, player.gameActivity.all_pieces, turn,false);
             rate = s.getRate();
             return rate;
         }

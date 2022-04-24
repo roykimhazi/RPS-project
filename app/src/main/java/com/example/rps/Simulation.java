@@ -22,7 +22,7 @@ public class Simulation
     int far_arr[] = {-16,-15,-14,-13,-12,-9,-2,5,2,9,12,13,14,15,16};
     int super_far_arr[] = {-24,-23,-22,-21,-20,-19,-18, -17,-10,-3, 4,11, -11,-4,3,10,17,18,19,20,21,22,23,24};
 
-    public Simulation(Player blue_player, Computer computer, HashMap<Integer, Piece_type> all_pieces, int depth, boolean turn, boolean copy, int first_loc, int move_loc) // Copy = true if needs to create copy values of players, else false.
+    public Simulation(Player blue_player, Computer computer, HashMap<Integer, Piece_type> all_pieces, boolean turn, boolean copy) // Copy = true if needs to create copy values of players, else false.
     {
         if (copy) // Need to create copy of blue player and computer.
         {
@@ -37,7 +37,6 @@ public class Simulation
             this.blue_player = blue_player;//new Player(blue_player);//
             this.computer = computer;//new Computer(computer);//
             this.all_pieces = all_pieces;
-            this.depth = depth + 1;
             this.turn = turn;
         }
     }
@@ -299,13 +298,14 @@ public class Simulation
                 computer.reportAGuess(first_loc, piece_type);
                 blue_player.getPieces().put(move_loc, piece_type);
                 computer.updateMove(first_loc, move_loc);
-                blue_player.getPieces().get(move_loc).expose();
+                //blue_player.getPieces().get(move_loc).expose();
                 all_pieces.put(first_loc,Piece_type.get_empty());
                 all_pieces.put(move_loc, piece_type);
             }
             else // Player attacks and lose.
             {
-                computer.getPieces().get(move_loc).expose();
+                //computer.getPieces().get(move_loc).expose();
+                //System.out.println(" " + move_loc + computer.getPieces().get(move_loc).getType());
                 computer.reportAGuess(first_loc, blue_player.getPieces().remove(first_loc));
                 computer.removeFromGuess(first_loc);
                 all_pieces.put(first_loc,Piece_type.get_empty());
@@ -316,7 +316,7 @@ public class Simulation
         {
             if (winner) // If player won PC = true, else false. // PC attacks and lose.
             {
-                blue_player.getPieces().get(move_loc).expose();
+                //blue_player.getPieces().get(move_loc).expose();
                 computer.reportAGuess(move_loc,blue_player.getPieces().get(move_loc));
                 computer.getPieces().remove(first_loc);
                 all_pieces.put(first_loc,Piece_type.get_empty());
@@ -326,7 +326,7 @@ public class Simulation
                 computer.reportAGuess(move_loc, blue_player.getPieces().remove(move_loc));
                 computer.removeFromGuess(move_loc);
                 computer.getPieces().put(move_loc, computer.getPieces().remove(first_loc));
-                computer.getPieces().get(move_loc).expose();
+                //computer.getPieces().get(move_loc).expose();
                 all_pieces.put(first_loc,Piece_type.get_empty());
                 all_pieces.put(move_loc, computer.getPieces().get(move_loc));
             }

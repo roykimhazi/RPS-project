@@ -18,6 +18,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Would you like to play with pieces exposed?"
+        android:textStyle="bold"
         android:textColor="@color/white"
         android:textSize="50sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -29,15 +30,15 @@
 
     <Button
         android:id="@+id/no_button"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="97dp"
+        android:layout_height="94dp"
         android:background="@drawable/x_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.26"
+        app:layout_constraintHorizontal_bias="0.254"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.858" />
+        app:layout_constraintVertical_bias="0.849" />
 
     <Button
         android:id="@+id/yes_button"

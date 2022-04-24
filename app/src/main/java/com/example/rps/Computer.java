@@ -320,7 +320,7 @@ public class Computer extends Player {
         }
     }
 
-    public List<Pair<Integer,Integer>> getPossibleMoves(HashMap <Integer, Piece_type> all_pieces, boolean turn)
+    public List<Pair<Integer,Integer>> getPossibleMoves(boolean turn)
     {
         List<Pair<Integer,Integer>> moves_list = new ArrayList<Pair<Integer,Integer>>(); // This list contains all possible moves.
         if (turn) // Player turn
@@ -329,29 +329,21 @@ public class Computer extends Player {
             {
                 if (gameActivity.blue_player.getPieces().get(rand_loc).getType() == Types.king || gameActivity.blue_player.getPieces().get(rand_loc).getType() == Types.trap )
                     continue;
-                if (all_pieces.get(rand_loc + 7) != null && (rand_loc + 7) % 7 == rand_loc % 7 && gameActivity.blue_player.getPieces().get(rand_loc + 7) == null)
+                if (gameActivity.all_pieces.get(rand_loc + 7) != null && (rand_loc + 7) % 7 == rand_loc % 7 && gameActivity.blue_player.getPieces().get(rand_loc + 7) == null)
                 {
                     moves_list.add(new Pair<>(rand_loc, rand_loc + 7));
-//                whichMove(all_pieces, rand_loc, rand_loc + 7, board, tv_text);
-//                break;
                 }
-                if (all_pieces.get(rand_loc + 1) != null && (rand_loc + 1) / 7 == rand_loc / 7 && gameActivity.blue_player.getPieces().get(rand_loc + 1) == null)
+                if (gameActivity.all_pieces.get(rand_loc + 1) != null && (rand_loc + 1) / 7 == rand_loc / 7 && gameActivity.blue_player.getPieces().get(rand_loc + 1) == null)
                 {
                     moves_list.add(new Pair<>(rand_loc, rand_loc + 1));
-//                whichMove(all_pieces, rand_loc, rand_loc + 1, board, tv_text);
-//                break;
                 }
-                if (all_pieces.get(rand_loc - 7) != null && (rand_loc - 7) % 7 == rand_loc % 7 && gameActivity.blue_player.getPieces().get(rand_loc - 7) == null)
+                if (gameActivity.all_pieces.get(rand_loc - 7) != null && (rand_loc - 7) % 7 == rand_loc % 7 && gameActivity.blue_player.getPieces().get(rand_loc - 7) == null)
                 {
                     moves_list.add(new Pair<>(rand_loc, rand_loc - 7));
-//                whichMove(all_pieces, rand_loc, rand_loc - 7, board, tv_text);
-//                break;
                 }
-                if (all_pieces.get(rand_loc - 1) != null && (rand_loc - 1) / 7 == rand_loc / 7 && gameActivity.blue_player.getPieces().get(rand_loc - 1) == null)
+                if (gameActivity.all_pieces.get(rand_loc - 1) != null && (rand_loc - 1) / 7 == rand_loc / 7 && gameActivity.blue_player.getPieces().get(rand_loc - 1) == null)
                 {
                     moves_list.add(new Pair<>(rand_loc, rand_loc - 1));
-//                whichMove(all_pieces, rand_loc, rand_loc - 1, board, tv_text);
-//                break;
                 }
             }
         }
@@ -361,55 +353,46 @@ public class Computer extends Player {
             {
                 if (this.getPieces().get(rand_loc).getType() == Types.king || this.getPieces().get(rand_loc).getType() == Types.trap )
                     continue;
-                if (all_pieces.get(rand_loc + 7) != null && (rand_loc + 7) % 7 == rand_loc % 7 && this.getPieces().get(rand_loc + 7) == null)
+                if (gameActivity.all_pieces.get(rand_loc + 7) != null && (rand_loc + 7) % 7 == rand_loc % 7 && this.getPieces().get(rand_loc + 7) == null)
                 {
                     moves_list.add(new Pair<>(rand_loc, rand_loc + 7));
-//                whichMove(all_pieces, rand_loc, rand_loc + 7, board, tv_text);
-//                break;
                 }
-                if (all_pieces.get(rand_loc + 1) != null && (rand_loc + 1) / 7 == rand_loc / 7 && this.getPieces().get(rand_loc + 1) == null)
+                if (gameActivity.all_pieces.get(rand_loc + 1) != null && (rand_loc + 1) / 7 == rand_loc / 7 && this.getPieces().get(rand_loc + 1) == null)
                 {
                     moves_list.add(new Pair<>(rand_loc, rand_loc + 1));
-//                whichMove(all_pieces, rand_loc, rand_loc + 1, board, tv_text);
-//                break;
                 }
-                if (all_pieces.get(rand_loc - 7) != null && (rand_loc - 7) % 7 == rand_loc % 7 && this.getPieces().get(rand_loc - 7) == null)
+                if (gameActivity.all_pieces.get(rand_loc - 7) != null && (rand_loc - 7) % 7 == rand_loc % 7 && this.getPieces().get(rand_loc - 7) == null)
                 {
                     moves_list.add(new Pair<>(rand_loc, rand_loc - 7));
-//                whichMove(all_pieces, rand_loc, rand_loc - 7, board, tv_text);
-//                break;
                 }
-                if (all_pieces.get(rand_loc - 1) != null && (rand_loc - 1) / 7 == rand_loc / 7 && this.getPieces().get(rand_loc - 1) == null)
+                if (gameActivity.all_pieces.get(rand_loc - 1) != null && (rand_loc - 1) / 7 == rand_loc / 7 && this.getPieces().get(rand_loc - 1) == null)
                 {
                     moves_list.add(new Pair<>(rand_loc, rand_loc - 1));
-//                whichMove(all_pieces, rand_loc, rand_loc - 1, board, tv_text);
-//                break;
                 }
             }
         }
         return moves_list;
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void makeMove(HashMap <Integer, Piece_type> all_pieces, Board board, TextView tv_text, boolean turn) // True if player turn, else false.
+    public void makeMove(boolean turn) // True if player turn, else false.
     {
         /*
             This function makes a move by using MCTS and Heuristic function.
          */
         Pair<Integer,Integer> chosen_move;
-//        chosen_move = MCTS_Node.StartMCTS(gameActivity.blue_player, this);
-//        whichMove(all_pieces, chosen_move.first, chosen_move.second, board, tv_text );
-        List<Pair<Integer,Integer>> moves_list = getPossibleMoves(all_pieces, turn); // This list contains all possible moves.
-        if (!moves_list.isEmpty())
-        {
-            int i = chooseBestMove(moves_list, turn);
-            whichMove(all_pieces, moves_list.get(i).first, moves_list.get(i).second,board,tv_text );
-        }
-        //whichMove(all_pieces, first_loc, rand_loc, board);
+        chosen_move = MCTS_Node.StartMCTS(gameActivity.blue_player, this);
+        whichMove(chosen_move.first, chosen_move.second);
+//        List<Pair<Integer,Integer>> moves_list = getPossibleMoves(turn); // This list contains all possible moves.
+//        if (!moves_list.isEmpty())
+//        {
+//            int i = chooseBestMove(moves_list, turn);
+//            whichMove(moves_list.get(i).first, moves_list.get(i).second);
+//        }
     }
 
     public List<Pair<Integer,Integer>> get_all_moves_sorted(boolean turn)
     {
-        List<Pair<Integer,Integer>> moves = getPossibleMoves(gameActivity.all_pieces, turn); // This list contains all possible moves.
+        List<Pair<Integer,Integer>> moves = getPossibleMoves(turn); // This list contains all possible moves.
         sort_move_list(moves, turn);
         return moves;
     }
@@ -418,9 +401,15 @@ public class Computer extends Player {
     public Pair<Pair<Integer,Integer>,Double> getBestMove(boolean turn)
     {
         double best_rate;
-        List<Pair<Integer,Integer>> moves = getPossibleMoves(gameActivity.all_pieces, turn); // This list contains all possible moves.
-        best_rate = sort_move_list(moves, turn);
-        return new Pair<>(moves.get(0),best_rate);
+        List<Pair<Integer,Integer>> moves = getPossibleMoves(turn); // This list contains all possible moves.
+        if (moves.size() != 0)
+        {
+            best_rate = sort_move_list(moves, turn);
+            return new Pair<>(moves.get(0),best_rate);
+        }
+        else
+            return new Pair<>(new Pair<>(-1,-1),-666.666);
+
     }
 
 
@@ -428,7 +417,7 @@ public class Computer extends Player {
     {
 
         Simulation new_simulation;
-        Simulation simulation = new Simulation(gameActivity.blue_player, this, gameActivity.all_pieces, 0, turn, false, 0 , 0);
+        Simulation simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(), turn, false);
         double rate_of_current_pos = simulation.getRate();
         double rate_of_moved_loc;
         double [] rates = new double[moves_list.size()];
@@ -436,7 +425,7 @@ public class Computer extends Player {
         Pair<Integer,Integer> temp_p;
         for (int i = 0; i < moves_list.size(); i++)
         {
-            new_simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(),0, turn, true, moves_list.get(i).first , moves_list.get(i).second);
+            new_simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(), turn, true);
             new_simulation.doMove(moves_list.get(i).first , moves_list.get(i).second);
             rate_of_moved_loc = new_simulation.getRate();
             rate_of_current_pos = rate_of_moved_loc - rate_of_current_pos;
@@ -457,8 +446,8 @@ public class Computer extends Player {
                 }
             }
         }
-        for (int i = 0; i < moves_list.size() - 1; i++)
-            System.out.println("Move number - " + i + " at location : " + moves_list.get(i).first + " to: " + moves_list.get(i).second + " rate = " + rates[i]);
+        //for (int i = 0; i < moves_list.size() - 1; i++)
+            // System.out.println("Move number - " + i + " at location : " + moves_list.get(i).first + " to: " + moves_list.get(i).second + " rate = " + rates[i]);
         return rates[0];
     }
 
@@ -469,15 +458,15 @@ public class Computer extends Player {
             This function returns the best move based on the biggest difference of all moves.
          */
         Simulation new_simulation;
-        Simulation simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(),0, true, false, 0 , 0);
+        Simulation simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(), true, false);
         double rate_of_current_pos = simulation.getRate();
         double best_move_rate = -999999999;
         int index_of_best_move = 0;
         double rate_of_moved_loc;
-        System.out.println("________________________");
+        // System.out.println("________________________");
         for (int i = 0; i < moves_list.size(); i++)
         {
-            new_simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(),0, false, true, moves_list.get(i).first , moves_list.get(i).second);
+            new_simulation = new Simulation(gameActivity.blue_player, this, gameActivity.getCopy_of_All_pieces(),false, true);
             new_simulation.doMove(moves_list.get(i).first , moves_list.get(i).second);
             rate_of_moved_loc = new_simulation.getRate();
             if (rate_of_moved_loc - rate_of_current_pos > best_move_rate)
@@ -485,29 +474,29 @@ public class Computer extends Player {
                 best_move_rate = rate_of_moved_loc - rate_of_current_pos;
                 index_of_best_move = i;
             }
-            System.out.println("Move number - " + i + " at location : " + moves_list.get(i).first + " to: " + moves_list.get(i).second + " rate = " + rate_of_moved_loc);
+            // System.out.println("Move number - " + i + " at location : " + moves_list.get(i).first + " to: " + moves_list.get(i).second + " rate = " + rate_of_moved_loc);
         }
         return index_of_best_move;
     }
 
-    public void whichMove(HashMap <Integer, Piece_type> all_pieces, int first_loc, int move_loc, Board board, TextView tv_text)
+    public void whichMove( int first_loc, int move_loc)
     {
         /*
             This function make a move or start a fight.
          */
-        if (all_pieces.get(move_loc).getType() == Types.empty)
+        if (gameActivity.all_pieces.get(move_loc).getType() == Types.empty)
         {
             Piece_type p_type = this.getPieces().remove(first_loc);
             this.getPieces().put(move_loc, p_type);
-            all_pieces.put(first_loc, Piece_type.get_empty());
-            all_pieces.put(move_loc, p_type);
-            board.updateButton(move_loc / 7, move_loc % 7, p_type.getType(), false, this.getPieces().get(move_loc).is_exposed());//update on board
-            board.clearButton(first_loc / 7, first_loc % 7);
+            gameActivity.all_pieces.put(first_loc, Piece_type.get_empty());
+            gameActivity.all_pieces.put(move_loc, p_type);
+            gameActivity.board.updateButton(move_loc / 7, move_loc % 7, p_type.getType(), false, this.getPieces().get(move_loc).is_exposed());//update on board
+            gameActivity.board.clearButton(first_loc / 7, first_loc % 7);
         }
         else
         {
-            Piece_type computer_piece = all_pieces.get(first_loc);
-            Piece_type player_piece = all_pieces.get(move_loc);
+            Piece_type computer_piece = gameActivity.all_pieces.get(first_loc);
+            Piece_type player_piece = gameActivity.all_pieces.get(move_loc);
             if (player_piece.getType() == Types.trap)
             {
                 clearAfterFight(move_loc, first_loc, false);
@@ -608,6 +597,7 @@ public class Computer extends Player {
                 gameActivity.tv_text.setText("Red won with " + p_type.getType().toString());
                 this.getPieces().put(player_loc, p_type);
                 this.getPieces().get(player_loc).expose();
+                // System.out.println("computer 594: " + player_loc + this.getPieces().get(player_loc).getType());
                 gameActivity.all_pieces.put(computer_loc, Piece_type.get_empty());
                 gameActivity.all_pieces.put(player_loc, p_type);
                 gameActivity.all_pieces.get(player_loc).expose();
@@ -615,6 +605,8 @@ public class Computer extends Player {
                 removeFromGuess(player_loc);
                 gameActivity.board.updateButton(player_loc / 7, player_loc % 7, p_type.getType(), false, true);//update on board
                 gameActivity.board.clearButton(computer_loc / 7, computer_loc % 7);// remove moved piece from last location
+                if (gameActivity.blue_player.getPieces().size() == 2)
+                    gameActivity.create_lose_dialog();
             }
         }
     }
@@ -622,7 +614,7 @@ public class Computer extends Player {
 
     public void makeMoveMCTS(Pair<Integer,Integer> move, boolean turn)
     {
-        Simulation simulation = new Simulation(gameActivity.blue_player, this, gameActivity.all_pieces,0, turn, false, move.first , move.second);
+        Simulation simulation = new Simulation(gameActivity.blue_player, this, gameActivity.all_pieces, turn, false);
         simulation.doMove(move.first,move.second);
     }
 

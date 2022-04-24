@@ -29,15 +29,12 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
     LinearLayout linearLayoutBoard, two_buttons;
     Board board;
     int column, row, turn, first_click_loc;
-    BoardHandler bh;
     Dialog d_lose, d_win, d_tie;
-    TextView tvbombsleft_d, tv_score_d;
-    Button homebtn_lose, homebtn_win, btn_flag;
+    Button homebtn_lose, homebtn_win;
     ImageButton re_scissors, re_rock, re_paper;
     boolean second_move = false, is_first = true, is_sec = true, first_move, all_expose;
     TextView tv_text, tv_type_chose;
-    String userName;
-    Player red_player, blue_player;
+    Player blue_player;
     Computer computer;
     HashMap <Integer, Piece_type> all_pieces;
     Pair<Integer,Integer> first_click_pair, second_click_pair;
@@ -53,48 +50,41 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             all_expose = true;
         else
             all_expose = false;
-        System.out.println(all_expose);
-        //column = Integer.valueOf(getIntent().getExtras().getString("column"));
-        //row = Integer.valueOf(getIntent().getExtras().getString("row"));
         all_pieces = new HashMap<Integer,Piece_type>();
         Random rand = new Random();
         turn = rand.nextInt(2);
-        //turn = 1;
         first_move = true;
         row = 6;
         column = 7;
         blue_player = new Player(4, this, all_expose);
         linearLayoutBoard = (LinearLayout) findViewById(R.id.board);
         board = new Board(this, linearLayoutBoard, column, row);
-        //bh = new BoardHandler(column, row);
         computer = new Computer(0, board, this, all_expose);
-        //System.out.println(bh.toString());
-        //btn_flag.setOnClickListener(this);
         tv_text = (TextView)findViewById(R.id.tvtext);
-        userName = getIntent().getExtras().getString("userName");
-
     }
-
+    /**
+     * This function is auto active.
+     * Initialize the board.
+     */
     @Override
     protected void onStart()
     {
-        // This function is auto active.
-        // Initialize the board.
         super.onStart();
         board.setClickable(true);
         board.setListener();
         Toast.makeText(this, "Place your flag", Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * This function checks which button was pressed and operate accordingly.
+     * This function receives the view that pressed.
+     * @param v
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     @SuppressLint("ResourceType")
     @Override
     public void onClick(View v)
     {
-        /*
-         This function checks which button was pressed and operate accordingly.
-         This function receives the view that pressed.
-         */
         if(v.getId() == 1)
         {
             // Spread pieces again randomly.
@@ -127,7 +117,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 else {
                     tv_text.setText("Red start");
                     tv_text.setTextColor(0xffff0000);
-                    computer.makeMove(all_pieces, board, tv_text, false);
+                    computer.makeMove( false);
                     turn = 1;
                 }
             }
@@ -181,9 +171,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                         Intent intent = new Intent(this, MainActivity.class);
                         startActivity(intent);
                     }
-                    //else
-
-
                     /*
                      To make a move the player must press two buttons.
                      The first - the piece you would like to move.
@@ -192,11 +179,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     if(!first_move)
                     {
                         second_move = second_move((Button) v);
-                        if (second_move)
-                        {
-//                                turn = 0;
-//                                computer.makeMove(all_pieces, board, tv_text);
-                        }
                         first_move = true;
                     }
                     else if(first_move)
@@ -206,19 +188,15 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
-//else
-//                            {
-//                                create_lose_dialog();
-//                            }
 
-
+    /**
+     * This function receives a button and checks if the button is valid to press,
+     * Mark the places that the piece can go.
+     * @param b
+     * @return Return true or false if move is valid  or not.
+     */
     public boolean first_move(Button b)
     {
-        /*
-            This function receives a button and checks if the button is valid to press,
-            Mark the places that the piece can go.
-            Return true or false if valid move or not.
-        */
         Pair<Integer, Integer> pair = getButtonPos(board, (Button) b);
         int loc = pair.first * column + pair.second;
         if (turn == 1) // Player turn.
@@ -240,7 +218,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             }
             first_click_loc = loc;
             first_click_pair = pair;
-            // mark all movable places.
+            // Mark all movable places.
             if(pair.second != 0 && all_pieces.get(loc - 1).getType() == Types.empty) // Mark left
             {
                 board.moveAble(pair.first ,pair.second - 1);
@@ -264,14 +242,16 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             return false;
     }
 
+    /**
+     * This function receives a button, checks if the move is valid and move the piece.
+     * If the piece move towards empty place it will move, otherwise start fight with the pc piece.
+     * After that, the computer play it's move.
+     * @param b
+     * @return return true if piece moved, else false.
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean second_move(Button b)
     {
-        /*
-            This function receives a button, checks if the move is valid and move the piece.
-            If the piece move towards empty place it will move, otherwise start fight with the pc piece.
-            After that, the computer play it's move.
-         */
         Pair<Integer, Integer> pair = getButtonPos(board, (Button) b);
         int loc = pair.first * column + pair.second; // Get the location of player second press.
         second_click_pair = pair;
@@ -285,7 +265,7 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             board.clearButton(first_click_pair.first, first_click_pair.second); // Remove moved piece from last location
             computer.updateMove(first_click_loc, loc);
             turn = 0;
-            computer.makeMove(all_pieces, board, tv_text, false); // Computer move.
+            computer.makeMove( false); // Computer move.
         }
         else
             if(blue_player.getPieces().get(loc) != null) // Prevent unwanted crushes
@@ -305,18 +285,19 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     clearButtons(first_click_pair);
                     return false;
                 }
-
         clearButtons(first_click_pair);
         return true;
     }
 
+    /**
+     *  This function receives player piece location and computer piece location.
+     *  And calculate the result, if player won or PC won.
+     * @param player_loc
+     * @param computer_loc
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void startFight(int player_loc, int computer_loc)
     {
-        /*
-            This function receives player piece location and computer piece location.
-            And calculate the result, if player won or PC won.
-         */
         Piece_type player_piece = all_pieces.get(player_loc);
         Piece_type computer_piece = all_pieces.get(computer_loc);
         if(player_piece.getType() != computer_piece.getType()) // If the types of the pieces is different.
@@ -366,25 +347,25 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             {
                 clearAfterFight(player_loc, computer_loc, true);
             }
-
         }
         else
         {
             create_tie_dialog(player_piece, first_click_loc, computer_loc); // If tie, call func.
         }
     }
+
+    /**
+     *  This function receives player piece location and computer piece location.
+     *  It updates the types of the pieces and start fight all over again.
+     * @param player_loc
+     * @param computer_loc
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void update_player_after_tie(int player_loc, int computer_loc)
     {
-        /*
-            This function receives player piece location and computer piece location.
-            It updates the types of the pieces and start fight all over again.
-         */
         Piece_type p_type = blue_player.getPieces().get(player_loc);
         blue_player.getPieces().put(player_loc, Piece_type.get_piece(chosen));
-        //blue_player.getPieces().get(player_loc).expose();
         all_pieces.put(player_loc, Piece_type.get_piece(chosen));
-        //all_pieces.get(player_loc).expose();
         board.updateButton(player_loc / 7, player_loc % 7, chosen, true, true);//update on board
         computer.updateGuessAfterTie(player_loc, p_type, chosen);
         d_tie.dismiss();
@@ -392,20 +373,23 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         if(turn == 1)
             startFight(player_loc, second_click_pair.first * column + second_click_pair.second);
         else
-            computer.whichMove(all_pieces, computer_loc, player_loc, board, tv_text);
+            computer.whichMove(computer_loc, player_loc);
     }
+
+    /**
+     *  This function receive player piece location, computer piece location and who won the fight.
+     *  The function updates the data of both players according to the winner.
+     * @param player_loc
+     * @param computer_loc
+     * @param winner
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void clearAfterFight(int player_loc, int computer_loc, boolean winner) // true if player won, false if computer won.
     {
-        /*
-           This function receive player piece location, computer piece location and who won the fight.
-           The function updates the data of both players according to the winner.
-        */
         if (computer.getPieces().get(computer_loc) != null && computer.getPieces().get(computer_loc).getType() == Types.trap)
         {
             tv_text.setTextColor(0xffff0000);
             tv_text.setText("Your player fell into red " + Types.trap.toString());
-            //blue_player.getPieces().remove(player_loc);
             Piece_type p_type = blue_player.getPieces().remove(player_loc);
             computer.reportAGuess(player_loc, p_type);
             computer.removeFromGuess(player_loc);
@@ -414,9 +398,10 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
         else
             {
+                Piece_type p_type;// remove moved piece from last location
                 if(winner)  // If player won the fight.
                 {
-                    Piece_type p_type = blue_player.getPieces().remove(player_loc);
+                    p_type = blue_player.getPieces().remove(player_loc);
                     tv_text.setTextColor(0xff0000ff);
                     tv_text.setText("Blue won with " + p_type.getType().toString());
                     blue_player.getPieces().put(computer_loc, p_type);
@@ -428,31 +413,33 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                     computer.updateMove(player_loc, computer_loc);
                     computer.getPieces().remove(computer_loc);
                     board.updateButton(second_click_pair.first, second_click_pair.second, p_type.getType(), true, true);//update on board
-                    board.clearButton(first_click_pair.first, first_click_pair.second);// remove moved piece from last location
                 }
                 else // If PC won the fight.
                 {
-                    Piece_type p_type = computer.getPieces().get(computer_loc);
+                    p_type = computer.getPieces().get(computer_loc);
                     computer.getPieces().get(computer_loc).expose();
                     tv_text.setTextColor(0xffff0000);
                     tv_text.setText("Red won with " + p_type.getType().toString());
                     all_pieces.put(player_loc, Piece_type.get_empty());
-                    //blue_player.getPieces().remove(player_loc);
                     computer.reportAGuess(player_loc, blue_player.getPieces().remove(player_loc));
                     computer.removeFromGuess(player_loc);
                     board.updateButton(second_click_pair.first, second_click_pair.second, p_type.getType(), false, true);
-                    board.clearButton(first_click_pair.first, first_click_pair.second);// remove moved piece from last location
+
                 }
-        }
+                board.clearButton(first_click_pair.first, first_click_pair.second);// remove moved piece from last location
+            }
+        if (blue_player.getPieces().size() == 2)
+            create_lose_dialog();
         turn = 0;
-        computer.makeMove(all_pieces, board, tv_text, false); // Start PC move.
+        computer.makeMove( false); // Start PC move.
     }
 
+    /**
+     * This function receives a Pair of last clicked location and removes all unwanted marks from the board.
+     * @param last_pair
+     */
     public void clearButtons(Pair last_pair)
     {
-        /*
-            This function receives a Pair of last clicked location and removes all unwanted marks from the board.
-         */
         if((int)last_pair.second != 0 && board.getButtons()[(int)last_pair.first][(int)last_pair.second - 1].getText() == "⌾") // Clear left
         {
             board.clearButton((int)last_pair.first ,(int)last_pair.second - 1);
@@ -471,12 +458,15 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     *  This function receives the board and a button that pressed.
+     *  Returns the values of the button on the board that pressed.
+     * @param board
+     * @param button
+     * @return
+     */
     public Pair<Integer, Integer> getButtonPos(Board board, Button button)
     {
-        /*
-            This function receives the board and a button that pressed.
-            Returns the values of the button on the board that pressed.
-         */
         int x, y;
         for (y = 0; y < row; y++)
         {
@@ -491,29 +481,24 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         return null;
     }
 
+    /**
+     * This function creates lose dialog.
+     */
     protected void create_lose_dialog()
-        /*
-            This function creates lose dialog.
-         */
     {
         d_lose = new Dialog(this);
         d_lose.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         d_lose.setContentView(R.layout.dialog_gameover);
         homebtn_lose = (Button) d_lose.findViewById(R.id.dialogreturn);
         homebtn_lose.setOnClickListener(this);
-        //tvbombsleft_d.setText("Bombs left - " + tv_bombs.getText().toString());
-        tv_score_d = (TextView)d_lose.findViewById(R.id.tv_score_d);
-        //tv_score_d.setText("Score - " + tv_score.getText().toString());
         d_lose.setCancelable(false);
         d_lose.show();
-        //updateData();
     }
-
+    /**
+     * This function creates tie dialog.
+     */
     public void create_tie_dialog(Piece_type p_type, int player_loc, int computer_loc)
     {
-        /*
-            This function creates tie dialog.
-         */
         d_tie = new Dialog(this);
         d_tie.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d_tie.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
@@ -527,7 +512,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             {
                 chosen = Types.scissors;
                 update_player_after_tie(player_loc, computer_loc);
-                //d_tie.dismiss();
             }
         });
         re_rock = (ImageButton) d_tie.findViewById(R.id.rock);
@@ -539,7 +523,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             {
                 chosen = Types.rock;
                 update_player_after_tie(player_loc, computer_loc);
-                //d_tie.dismiss();
             }
         });
         re_paper = (ImageButton) d_tie.findViewById(R.id.paper);
@@ -551,7 +534,6 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
             {
                 chosen = Types.paper;
                 update_player_after_tie(player_loc, computer_loc);
-                //d_tie.dismiss();
             }
         });
         tv_type_chose = (TextView)d_tie.findViewById(R.id.tv_type_chose);
@@ -565,16 +547,16 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         d_tie.setCancelable(false);
         d_tie.show();
     }
+
+    /**
+     *  This function creates win dialog.
+     */
     private void win()
     {
-        /*
-            This function creates win dialog.
-         */
-
         d_win = new Dialog(this);
         d_win.requestWindowFeature(Window.FEATURE_NO_TITLE);
         d_win.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        d_win.setContentView(R.layout.dialog_win);//dialog_win
+        d_win.setContentView(R.layout.dialog_win);
         homebtn_win = (Button) d_win.findViewById(R.id.dialog_win_return);
         homebtn_win.setOnClickListener(new View.OnClickListener()
         {
@@ -585,14 +567,14 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(intent);
             }
         });
-        tv_score_d = (TextView)d_win.findViewById(R.id.tv_score_d);
-        //tv_score_d.setText("Score - " + tv_score.getText().toString());
         d_win.setCancelable(false);
         d_win.show();
-        updateData();
-
     }
 
+    /**
+     * This function create a copy of all pieces.
+     * @return The copy HashMap.
+     */
     public HashMap<Integer,Piece_type>getCopy_of_All_pieces()
     {
         HashMap<Integer,Piece_type> copy = new HashMap<>();
@@ -602,25 +584,4 @@ public class GameActivity extends AppCompatActivity implements View.OnClickListe
         }
         return copy;
     }
-    public void updateData()
-        /*
-        *This function creates the connection from the client to the server and transports the name and score.
-        */
-    {
-        JSONObject update = new JSONObject();
-        try
-        {
-            update.put("username", userName);
-            //update.put("score", (tv_score.getText().toString()));
-            update.put("request", "update");
-            Client client = new Client(update);
-            JSONObject received = client.execute().get();
-            System.out.println(received);
-        }
-        catch (Exception e)
-        {
-            System.out.println(e.toString());
-        }
-    }
-
 }
